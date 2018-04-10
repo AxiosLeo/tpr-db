@@ -9,8 +9,7 @@
 
 namespace tpr\db;
 
-
-class DbOption
+final class DbOption
 {
     public static $defaultConfig = [
         // 数据库类型
@@ -58,7 +57,7 @@ class DbOption
         // Builder类
         'builder'         => '',
         // Query类
-        'query'           => '\\tpr\\db\\Query',
+        'query'           => '\\tpr\\db\\core\\Query',
         // 是否需要断线重连
         'break_reconnect' => false,
     ];
