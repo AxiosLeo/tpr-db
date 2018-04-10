@@ -8,10 +8,20 @@
 > 使用方法基本与tp的Db类相同，部分功能没有。
 
 ``` php
+namespace tpr\db;
+
+require_once __DIR__.'/../vendor/autoload.php';
+
 $database_config = [
-    'database'=>'table_name'
+    'database'=>'test'
 ];
 
-$list = tpr\db\Db::connect($database_config)->name('table_name_without_prefix')->select();
+$list = Db::connect($database_config)->name('test')->select();
 dump($list);
+
+$info = Db::model()->name('test')->where('id',1)->find();
+dump($info);
+
+$info = Db::name('test')->where('id',1)->find();
+dump($info);
 ```
