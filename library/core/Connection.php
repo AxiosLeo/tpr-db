@@ -18,7 +18,7 @@ use tpr\db\exception\PDOException;
 
 /**
  * Class Connection
- * @package tpr\db\driver
+ * @package tpr\db\core
  * @method Query table(string $table)
  * @method Query name(string $name)
  */
