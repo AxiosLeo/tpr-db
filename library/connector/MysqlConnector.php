@@ -12,9 +12,9 @@ namespace tpr\db\connector;
 use PDO;
 use tpr\db\core\Connection;
 
-class Mysql extends Connection
+class MysqlConnector extends Connection
 {
-    protected $builder = '\\tpr\\db\\builder\\Mysql';
+    protected $builder = '\\tpr\\db\\builder\\MysqlBuilder';
 
     /**
      * 解析pdo连接的dsn信息

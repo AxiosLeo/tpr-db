@@ -75,7 +75,7 @@ class Db
         if (empty($options['type'])) {
             throw new \InvalidArgumentException('Undefined db type');
         }
-        $class = false !== strpos($options['type'], '\\') ? $options['type'] : '\\tpr\\db\\connector\\' . ucwords($options['type']);
+        $class = false !== strpos($options['type'], '\\') ? $options['type'] : '\\tpr\\db\\connector\\' . ucwords(strtolower($options['type'])) . "Connector";
         self::$instance[$name] = new $class($options);
         return self::$instance[$name];
     }

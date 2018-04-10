@@ -11,7 +11,7 @@ namespace tpr\db\builder;
 
 use tpr\db\core\Builder;
 
-class Mysql extends Builder
+class MysqlBuilder extends Builder
 {
     protected $updateSql = 'UPDATE %TABLE% %JOIN% SET %SET% %WHERE% %ORDER%%LIMIT% %LOCK%%COMMENT%';
 
