@@ -248,7 +248,7 @@ abstract class Connection
      * @param array         $bind 参数绑定
      * @param bool          $master 是否在主服务器读操作
      * @param bool          $pdo 是否返回PDO对象
-     * @return array|bool
+     * @return array|bool|PDOStatement
      * @throws PDOException
      * @throws \ErrorException
      * @throws BindParamException
