@@ -123,6 +123,9 @@ class MongoConnector
         if (!class_exists('\MongoDB\Driver\Manager')) {
             throw new Exception('require mongodb > 1.0');
         }
+        if($config['query'] == '\tpr\db\core\Query'){
+            unset($config['query']);
+        }
         if (!empty($config)) {
             $this->config = array_merge($this->config, $config);
         }
