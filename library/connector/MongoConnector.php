@@ -58,7 +58,7 @@ class MongoConnector
     // 数据库连接参数配置
     protected $config = [
         // 数据库类型
-        'type'            => '',
+        'type'            => 'mongo',
         // 服务器地址
         'hostname'        => '',
         // 数据库名
