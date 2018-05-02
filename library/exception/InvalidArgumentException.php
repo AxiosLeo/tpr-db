@@ -13,7 +13,13 @@ use Throwable;
 
 class InvalidArgumentException extends Exception
 {
-    public function __construct(string $message = "InvalidArgument", int $code = 0, Throwable $previous = null)
+    /**
+     * InvalidArgumentException constructor.
+     * @param string $message
+     * @param int $code
+     * @param Throwable|null $previous
+     */
+    public function __construct($message = "InvalidArgument", $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
