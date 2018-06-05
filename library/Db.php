@@ -11,6 +11,7 @@ namespace tpr\db;
 
 use tpr\db\core\Connection;
 use tpr\db\core\Query;
+use tpr\framework\Config;
 
 /**
  * Class Db
@@ -87,7 +88,7 @@ class Db
     public static function model($name = "default")
     {
         if (!isset(self::$instance[$name])) {
-            throw new \InvalidArgumentException('Undefined connector');
+            return null;
         }
 
         return self::$instance[$name];
@@ -136,6 +137,11 @@ class Db
     public static function __callStatic($method, $params)
     {
         // 自动初始化数据库
-        return call_user_func_array([self::model(), $method], $params);
+        $model = self::model();
+        if(is_null($model)){
+            $config = Config::get('database');
+            $model = Db::connect($config);
+        }
+        return call_user_func_array([$model, $method], $params);
     }
 }
