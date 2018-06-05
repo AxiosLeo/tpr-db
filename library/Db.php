@@ -11,7 +11,6 @@ namespace tpr\db;
 
 use tpr\db\core\Connection;
 use tpr\db\core\Query;
-use tpr\framework\Config;
 
 /**
  * Class Db
@@ -131,17 +130,5 @@ class Db
             $dsn['params'] = [];
         }
         return $dsn;
-    }
-
-    // 调用驱动类的方法
-    public static function __callStatic($method, $params)
-    {
-        // 自动初始化数据库
-        $model = self::model();
-        if(is_null($model)){
-            $config = Config::get('database');
-            $model = Db::connect($config);
-        }
-        return call_user_func_array([$model, $method], $params);
     }
 }
