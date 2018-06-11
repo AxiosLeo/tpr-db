@@ -81,7 +81,8 @@ class MongoBuilder
      */
     protected function parseValue($value, $field = '')
     {
-        if ('_id' == $field && 'ObjectID' == $this->connection->getConfig('pk_type') && is_string($value)) {
+        $pk = $this->connection->getConfig('pk');
+        if ($pk == $field && 'ObjectID' == $this->connection->getConfig('pk_type') && is_string($value)) {
             return new ObjectId($value);
         }
         return $value;
