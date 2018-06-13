@@ -16,7 +16,7 @@
 ## 安装
 
 ``` php
-composer require axios/tpr-db:dev-master
+composer require axios/tpr-db
 ```
 
 ## 使用示例
