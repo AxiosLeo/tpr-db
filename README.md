@@ -24,7 +24,7 @@ composer require axios/tpr-db
 
 - Mysql | PGSql | MongoDB
 
-  > example => [example/db.php]()
+  > [example/db.php](https://github.com/AxiosCros/tpr-db/blob/master/example/db.php)
 
 ## 自定义连接器示例
 ``` php
