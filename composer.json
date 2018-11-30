@@ -1,7 +1,7 @@
 {
   "name": "axios/tpr-db",
   "description": "database orm",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "library",
   "license": "MIT",
   "homepage": "https://github.com/AxiosCros/tpr-db",
