@@ -26,6 +26,10 @@ composer require axios/tpr-db
 
   > [example/db.php](https://github.com/AxiosCros/tpr-db/blob/master/example/db.php)
 
+- Redis
+
+  > [example/redis.php](https://github.com/AxiosCros/tpr-db/blob/master/example/redis.php)
+
 ## 自定义连接器示例
 ``` php
 <?php
