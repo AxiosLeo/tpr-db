@@ -22,59 +22,9 @@ composer require axios/tpr-db
 
 > 使用方法基本与tp的Db类相同，部分功能没有。
 
-- Mysql
+- Mysql | PGSql | MongoDB
 
-``` php
-namespace tpr\db;
-
-require_once __DIR__.'/../vendor/autoload.php';
-
-$database_config = [
-    "type"              => 'mongo',
-    "hostname"          => '127.0.0.1',
-    "database"          => 'test',
-    "username"          => 'test',
-    "password"          => '123456',
-    "hostport"          => '27017',
-];
-
-$list = Db::connect($database_config)->name('test')->select();
-dump($list);
-
-$info = Db::model()->name('test')->where('id',1)->find();
-dump($info);
-
-$info = Db::name('test')->where('id',1)->find();
-dump($info);
-
-```
-
-- Mongo
-
-``` php
-namespace tpr\db;
-
-require_once __DIR__.'/../vendor/autoload.php';
-
-$database_config = [
-    "type"              => 'mysql',
-    "hostname"          => '127.0.0.1',
-    "database"          => 'test',
-    "username"          => 'root',
-    "password"          => 'root',
-    "hostport"          => '3306',
-];
-
-$list = Db::connect($database_config)->name('test')->select();
-dump($list);
-
-$info = Db::model()->name('test')->where('id',1)->find();
-dump($info);
-
-$info = Db::name('test')->where('id',1)->find();
-dump($info);
-
-```
+  > example => [example/db.php]()
 
 ## 自定义连接器示例
 ``` php
