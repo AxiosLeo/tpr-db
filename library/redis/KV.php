@@ -11,8 +11,8 @@ namespace tpr\db\redis;
 /**
  * Class KV
  * @package tpr\db\redis
- * @method int append($value)
- * @method int bitCount()
+ * @method int append($value) 尾部追加
+ * @method bool persist() 有效期永久
  */
 class KV
 {
@@ -68,9 +68,22 @@ class KV
         return $this->redis->del($this->key);
     }
 
-    public function ttl($micro = false)
+    public function expireAt($timestamp)
+    {
+        if ($timestamp < time()) {
+            return false;
+        }
+        return $this->redis->expireAt($this->key, $timestamp);
+    }
+
+    public function expire($micro = false)
     {
         return $micro ? $this->redis->pttl($this->key) : $this->redis->ttl($this->key);
+    }
+
+    public function rename($to, $must_be_exist = false)
+    {
+        return $must_be_exist ? $this->redis->renameNx($this->key, $to) : $this->redis->rename($this->key, $to);
     }
 
     public function __call($name, $arguments)
