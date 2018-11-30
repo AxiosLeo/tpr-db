@@ -931,6 +931,19 @@ class Query
     }
 
     /**
+     * 指定find_in_set查询条件
+     * @param        $field
+     * @param        $condition
+     * @param string $logic
+     *
+     * @return $this
+     */
+    public function whereFindInSet($field, $condition, $logic = 'AND'){
+        $this->parseWhereExp($logic, $field, 'find_in_set', $condition);
+        return $this;
+    }
+
+    /**
      * 指定NotIn查询条件
      * @access public
      * @param mixed  $field     查询字段
