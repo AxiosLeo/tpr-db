@@ -77,7 +77,7 @@ dump($info);
 
 ```
 
-## 自定义连接起示例
+## 自定义连接器示例
 ``` php
 <?php
 use tpr\db\DbClient;
