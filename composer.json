@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "composer/composer": "1.0.*@dev"
