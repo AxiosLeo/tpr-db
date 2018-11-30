@@ -458,6 +458,13 @@ abstract class Builder
                 }
                 $whereStr .= $key . ' ' . $exp . ' (' . (empty($zone) ? "''" : $zone) . ')';
             }
+        } elseif (in_array($exp,['FIND_IN_SET'])){
+            if ($value instanceof \Closure) {
+                $whereStr .= $exp . ' ' . $this->parseClosure($value);
+            }else{
+                $value = is_numeric($value) ? $value : '\''.$value.'\'';
+                $whereStr .=  $exp . ' (' . (empty($value) ? "''" : $value) . ','.$key.')';
+            }
         } elseif (in_array($exp, ['NOT BETWEEN', 'BETWEEN'])) {
             // BETWEEN 查询
             $data = is_array($value) ? $value : explode(',', $value);
