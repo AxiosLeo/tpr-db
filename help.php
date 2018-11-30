@@ -1,21 +1,22 @@
 <?php
 /**
- * @author: axios
- *
- * @email: axiosleo@foxmail.com
- * @blog:  http://hanxv.cn
+ * @author  : axios
+ * @email   : axiosleo@foxmail.com
+ * @blog    :  http://hanxv.cn
  * @datetime: 2018/4/10 10:29
  */
 
-if(!function_exists('dump')){
+if (!function_exists('dump')) {
     /**
      * @param null $var
      * @param bool $echo
      * @param null $label
-     * @param int $flags
+     * @param int  $flags
+     *
      * @return null|string|string[]
      */
-    function dump($var = null, $echo = true, $label = null, $flags = ENT_SUBSTITUTE){
+    function dump($var = null, $echo = true, $label = null, $flags = ENT_SUBSTITUTE)
+    {
         $label = (null === $label) ? '' : rtrim($label) . ':';
         ob_start();
         var_dump($var);
@@ -36,5 +37,12 @@ if(!function_exists('dump')){
         } else {
             return $output;
         }
+    }
+}
+
+if (!function_exists('dd')) {
+    function dd($data, $label = null)
+    {
+        dump($data, true, $label);
     }
 }

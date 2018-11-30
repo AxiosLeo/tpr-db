@@ -1,28 +1,28 @@
 {
-    "name": "axios/tpr-db",
-    "description": "database orm",
-    "version":"0.1.2",
-    "type": "library",
-    "license": "MIT",
-    "homepage": "https://github.com/AxiosCros/tpr-db",
-    "authors": [
-        {
-            "name": "Axios",
-            "email": "axioscros@aliyun.com"
-        }
-    ],
-    "require": {
-        "php": ">=7.0"
-    },
-    "require-dev": {
-        "composer/composer": "1.0.*@dev"
-    },
-    "autoload": {
-        "psr-4": {
-            "tpr\\db\\": "library"
-        },
-        "files":[
-            "help.php"
-        ]
+  "name": "axios/tpr-db",
+  "description": "database orm",
+  "version": "0.2.0",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/AxiosCros/tpr-db",
+  "authors": [
+    {
+      "name": "Axios",
+      "email": "axioscros@aliyun.com"
     }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "composer/composer": "1.0.*@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "tpr\\db\\": "library"
+    },
+    "files": [
+      "help.php"
+    ]
+  }
 }

@@ -20,13 +20,38 @@ abstract class Builder
     protected $query;
 
     // 数据库表达式
-    protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<=',
-        'notlike' => 'NOT LIKE', 'not like' => 'NOT LIKE', 'like' => 'LIKE', 'in' => 'IN', 'exp' => 'EXP',
-        'notin' => 'NOT IN', 'not in' => 'NOT IN', 'between' => 'BETWEEN', 'not between' => 'NOT BETWEEN',
-        'notbetween' => 'NOT BETWEEN', 'exists' => 'EXISTS', 'notexists' => 'NOT EXISTS', 'not exists' => 'NOT EXISTS',
-        'null' => 'NULL', 'notnull' => 'NOT NULL', 'not null' => 'NOT NULL', '> time' => '> TIME', '< time' => '< TIME',
-        '>= time' => '>= TIME', '<= time' => '<= TIME', 'between time' => 'BETWEEN TIME', 'not between time' => 'NOT BETWEEN TIME',
-        'notbetween time' => 'NOT BETWEEN TIME'];
+    protected $exp = [
+        'eq'               => '=',
+        'neq'              => '<>',
+        'gt'               => '>',
+        'egt'              => '>=',
+        'lt'               => '<',
+        'elt'              => '<=',
+        'notlike'          => 'NOT LIKE',
+        'not like'         => 'NOT LIKE',
+        'like'             => 'LIKE',
+        'in'               => 'IN',
+        'find_in_set'      => 'FIND_IN_SET',
+        'exp'              => 'EXP',
+        'notin'            => 'NOT IN',
+        'not in'           => 'NOT IN',
+        'between'          => 'BETWEEN',
+        'not between'      => 'NOT BETWEEN',
+        'notbetween'       => 'NOT BETWEEN',
+        'exists'           => 'EXISTS',
+        'notexists'        => 'NOT EXISTS',
+        'not exists'       => 'NOT EXISTS',
+        'null'             => 'NULL',
+        'notnull'          => 'NOT NULL',
+        'not null'         => 'NOT NULL',
+        '> time'           => '> TIME',
+        '< time'           => '< TIME',
+        '>= time'          => '>= TIME',
+        '<= time'          => '<= TIME',
+        'between time'     => 'BETWEEN TIME',
+        'not between time' => 'NOT BETWEEN TIME',
+        'notbetween time'  => 'NOT BETWEEN TIME'
+    ];
 
     // SQL表达式
     protected $selectSql = 'SELECT%DISTINCT% %FIELD% FROM %TABLE%%FORCE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%%LIMIT% %UNION%%LOCK%%COMMENT%';
@@ -432,6 +457,13 @@ abstract class Builder
                     $zone = implode(',', $this->parseValue($value, $field));
                 }
                 $whereStr .= $key . ' ' . $exp . ' (' . (empty($zone) ? "''" : $zone) . ')';
+            }
+        } elseif (in_array($exp,['FIND_IN_SET'])){
+            if ($value instanceof \Closure) {
+                $whereStr .= $exp . ' ' . $this->parseClosure($value);
+            }else{
+                $value = is_numeric($value) ? $value : '\''.$value.'\'';
+                $whereStr .=  $exp . ' (' . (empty($value) ? "''" : $value) . ','.$key.')';
             }
         } elseif (in_array($exp, ['NOT BETWEEN', 'BETWEEN'])) {
             // BETWEEN 查询
