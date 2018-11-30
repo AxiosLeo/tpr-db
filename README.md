@@ -76,3 +76,34 @@ $info = Db::name('test')->where('id',1)->find();
 dump($info);
 
 ```
+
+## 自定义连接起示例
+``` php
+<?php
+use tpr\db\DbClient;
+use tpr\db\DbFacade;
+
+class Mysql extends DbFacade
+{
+    public static function __callStatic($method, $params)
+    {
+        $config = [
+            'type'            => 'mysql',
+            // 服务器地址
+            'hostname'        => '127.0.0.1',
+            // 数据库名
+            'database'        => 'test',
+            // 用户名
+            'username'        => 'root',
+            // 密码
+            'password'        => 'root',
+            // 端口
+            'hostport'        => '3306',
+            // 数据库表前缀
+            'prefix'          => '',
+        ];
+        $Con    = DbClient::newCon('con_name', $config);
+        return call_user_func_array([$Con, $method], $params);
+    }
+}
+```
