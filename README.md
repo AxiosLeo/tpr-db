@@ -1,5 +1,10 @@
+[![Latest Stable Version](https://poser.pugx.org/axios/tpr-db/v/stable)](https://packagist.org/packages/axios/tpr-db)
+[![License](https://poser.pugx.org/axios/tpr-db/license)](https://packagist.org/packages/axios/tpr-db)
+
 # TPR-DB
 > 根据thinkphp的ORM移植而来，做了很多改动，去掉了"查询缓存"等跟tp耦合很强的功能。
+
+> [packagist.org/packages/axios/tpr-db](https://packagist.org/packages/axios/tpr-db)
 
 ## 特调
 - 独立，在任何使用composer的php框架中都可以使用
