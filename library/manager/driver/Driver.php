@@ -9,6 +9,7 @@
 namespace tpr\db\manager\driver;
 
 use tpr\db\core\ArrayTool;
+use tpr\db\core\Connection;
 
 abstract class Driver
 {
@@ -19,22 +20,30 @@ abstract class Driver
 
     protected $sql = [];
 
+    /**
+     * @var Connection
+     */
     protected $query;
 
     public function __construct($query)
     {
         $this->query = $query;
+        if (is_null($this->options)) {
+            $this->options = ArrayTool::instance($this->query->getConfig());
+        }
     }
 
     public function setOption($key, $value = null)
     {
-        if (is_null($this->options)) {
-            $this->options = ArrayTool::instance([]);
-        }
         $this->options->set($key, $value);
     }
 
-    public function getSql()
+    public function getOptions($key = null, $default = null)
+    {
+        return $this->options->get($key, $default);
+    }
+
+    private function getSql()
     {
         $db_name = $this->options->get('db.db_name', '');
 

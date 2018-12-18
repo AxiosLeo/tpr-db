@@ -43,7 +43,7 @@ class DbManager
     {
         $this->query = DbClient::newCon($con_name, $config);
         $db_type     = $this->query->getConfig('type');
-        if (in_array($db_type, $this->support)) {
+        if (!in_array($db_type, $this->support)) {
             $support = implode('|', $this->support);
             throw new DatabaseTypeErrorException("Database Type are not supported!  Only support " . $support);
         }
@@ -63,5 +63,10 @@ class DbManager
     {
         $this->driver->setOption($key, $value);
         return $this;
+    }
+
+    public function getOptions($key = null, $default = null)
+    {
+        return $this->driver->getOptions($key, $default);
     }
 }
