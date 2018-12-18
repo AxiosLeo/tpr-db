@@ -1,9 +1,8 @@
 <?php
 /**
- * @author: axios
- *
- * @email: axiosleo@foxmail.com
- * @blog:  http://hanxv.cn
+ * @author  : axios
+ * @email   : axiosleo@foxmail.com
+ * @blog    :  http://hanxv.cn
  * @datetime: 2018/4/10 10:50
  */
 
@@ -12,7 +11,6 @@ namespace tpr\db\core;
 use PDO;
 use PDOStatement;
 use tpr\db\Db;
-use tpr\db\DbOption;
 use tpr\db\exception\BindParamException;
 use tpr\db\exception\PDOException;
 
@@ -70,8 +68,8 @@ abstract class Connection
 
     public function __construct(array $config = [])
     {
-        $defaultConfig = DbOption::$defaultConfig;
-        $this->config = array_merge($defaultConfig, $config);
+        $defaultConfig = Db::$defaultConfig;
+        $this->config  = array_merge($defaultConfig, $config);
     }
 
     public function __call($method, $args)
@@ -88,8 +86,9 @@ abstract class Connection
         return new $class($this);
     }
 
-    public function getConfig($config_name = null){
-        if(!isset($this->config[$config_name]) || is_null($config_name)){
+    public function getConfig($config_name = null)
+    {
+        if (!isset($this->config[$config_name]) || is_null($config_name)) {
             return $this->config;
         }
         return $this->config[$config_name];
@@ -98,8 +97,10 @@ abstract class Connection
     /**
      * 设置数据库的配置参数
      * @access public
-     * @param string|array      $config 配置名称
-     * @param mixed             $value 配置值
+     *
+     * @param string|array $config 配置名称
+     * @param mixed        $value  配置值
+     *
      * @return void
      */
     public function setConfig($config, $value = '')
@@ -139,7 +140,7 @@ abstract class Connection
                 $this->links[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $params);
             } catch (\PDOException $e) {
                 if ($autoConnection) {
-                    return $this->connect($autoConnection, $linkNum);
+                    return $this->connect($config, $linkNum, $autoConnection);
                 } else {
                     throw $e;
                 }
@@ -151,7 +152,9 @@ abstract class Connection
     /**
      * 解析pdo连接的dsn信息
      * @access protected
+     *
      * @param array $config 连接信息
+     *
      * @return string
      */
     abstract protected function parseDsn($config);
@@ -159,7 +162,9 @@ abstract class Connection
     /**
      * 取得数据表的字段信息
      * @access public
+     *
      * @param string $tableName
+     *
      * @return array
      */
     abstract public function getFields($tableName);
@@ -167,7 +172,9 @@ abstract class Connection
     /**
      * 取得数据库的表信息
      * @access public
+     *
      * @param string $dbName
+     *
      * @return array
      */
     abstract public function getTables($dbName);
@@ -175,7 +182,9 @@ abstract class Connection
     /**
      * SQL性能分析
      * @access protected
+     *
      * @param string $sql
+     *
      * @return array
      */
     abstract protected function getExplain($sql);
@@ -183,7 +192,9 @@ abstract class Connection
     /**
      * 对返数据表字段信息进行大小写转换出来
      * @access public
+     *
      * @param array $info 字段信息
+     *
      * @return array
      */
     public function fieldCase($info)
@@ -244,10 +255,12 @@ abstract class Connection
     /**
      * 执行查询 返回数据集
      * @access public
-     * @param string        $sql sql指令
-     * @param array         $bind 参数绑定
-     * @param bool          $master 是否在主服务器读操作
-     * @param bool          $pdo 是否返回PDO对象
+     *
+     * @param string $sql    sql指令
+     * @param array  $bind   参数绑定
+     * @param bool   $master 是否在主服务器读操作
+     * @param bool   $pdo    是否返回PDO对象
+     *
      * @return array|bool|PDOStatement
      * @throws PDOException
      * @throws \ErrorException
@@ -305,8 +318,10 @@ abstract class Connection
     /**
      * 执行语句
      * @access public
-     * @param string        $sql sql指令
-     * @param array         $bind 参数绑定
+     *
+     * @param string $sql  sql指令
+     * @param array  $bind 参数绑定
+     *
      * @return bool|int
      * @throws PDOException
      * @throws \ErrorException
@@ -365,8 +380,10 @@ abstract class Connection
     /**
      * 根据参数绑定组装最终的SQL语句 便于调试
      * @access public
-     * @param string    $sql 带参数绑定的sql语句
-     * @param array     $bind 参数绑定列表
+     *
+     * @param string $sql  带参数绑定的sql语句
+     * @param array  $bind 参数绑定列表
+     *
      * @return string
      */
     public function getRealSql($sql, array $bind = [])
@@ -377,7 +394,7 @@ abstract class Connection
             if (PDO::PARAM_STR == $type) {
                 $value = $this->quote($value);
             } elseif (PDO::PARAM_INT == $type) {
-                $value = (float) $value;
+                $value = (float)$value;
             }
             // 判断占位符
             $sql = is_numeric($key) ?
@@ -395,7 +412,9 @@ abstract class Connection
      * 支持 ['name'=>'value','id'=>123] 对应命名占位符
      * 或者 ['value',123] 对应问号占位符
      * @access public
+     *
      * @param array $bind 要绑定的参数列表
+     *
      * @return void
      * @throws BindParamException
      */
@@ -426,7 +445,9 @@ abstract class Connection
     /**
      * 存储过程的输入输出参数绑定
      * @access public
+     *
      * @param array $bind 要绑定的参数列表
+     *
      * @return void
      * @throws BindParamException
      */
@@ -455,8 +476,10 @@ abstract class Connection
     /**
      * 获得数据集数组
      * @access protected
-     * @param bool   $pdo 是否返回PDOStatement
-     * @param bool   $procedure 是否存储过程
+     *
+     * @param bool $pdo       是否返回PDOStatement
+     * @param bool $procedure 是否存储过程
+     *
      * @return array|PDOStatement
      */
     protected function getResult($pdo = false, $procedure = false)
@@ -495,7 +518,9 @@ abstract class Connection
     /**
      * 执行数据库事务
      * @access public
+     *
      * @param callable $callback 数据操作方法回调
+     *
      * @return mixed
      * @throws \Exception
      * @throws \Throwable
@@ -603,7 +628,9 @@ abstract class Connection
 
     /**
      * 生成定义保存点的SQL
+     *
      * @param $name
+     *
      * @return string
      */
     protected function parseSavepoint($name)
@@ -613,7 +640,9 @@ abstract class Connection
 
     /**
      * 生成回滚到保存点的SQL
+     *
      * @param $name
+     *
      * @return string
      */
     protected function parseSavepointRollBack($name)
@@ -625,7 +654,9 @@ abstract class Connection
      * 批处理执行SQL语句
      * 批处理的指令都认为是execute操作
      * @access public
+     *
      * @param array $sqlArray SQL批处理指令
+     *
      * @return bool
      * @throws \Exception
      */
@@ -652,7 +683,9 @@ abstract class Connection
     /**
      * 获得查询次数
      * @access public
+     *
      * @param boolean $execute 是否包含所有查询
+     *
      * @return integer
      */
     public function getQueryTimes($execute = false)
@@ -687,7 +720,9 @@ abstract class Connection
     /**
      * 是否断线
      * @access protected
-     * @param \Exception|\PDOException  $e 异常对象
+     *
+     * @param \Exception|\PDOException $e 异常对象
+     *
      * @return bool
      */
     protected function isBreak($e)
@@ -732,7 +767,9 @@ abstract class Connection
     /**
      * 获取最近插入的ID
      * @access public
-     * @param string  $sequence     自增序列名
+     *
+     * @param string $sequence 自增序列名
+     *
      * @return string
      */
     public function getLastInsID($sequence = null)
@@ -772,8 +809,10 @@ abstract class Connection
     /**
      * SQL指令安全过滤
      * @access public
-     * @param string $str SQL字符串
+     *
+     * @param string $str    SQL字符串
      * @param bool   $master 是否主库查询
+     *
      * @return string
      */
     public function quote($str, $master = true)
@@ -785,7 +824,9 @@ abstract class Connection
     /**
      * 监听SQL执行
      * @access public
+     *
      * @param callable $callback 回调方法
+     *
      * @return void
      */
     public function listen($callback)
@@ -796,7 +837,9 @@ abstract class Connection
     /**
      * 初始化数据库连接
      * @access protected
+     *
      * @param boolean $master 是否主服务器
+     *
      * @return void
      */
     protected function initConnect($master = true)
@@ -823,7 +866,9 @@ abstract class Connection
     /**
      * 连接分布式服务器
      * @access protected
+     *
      * @param boolean $master 主服务器
+     *
      * @return PDO
      */
     protected function multiConnect($master = false)
