@@ -102,7 +102,7 @@ class ArrayTool implements \ArrayAccess
         }
 
         if (false === strpos($key, $this->separator)) {
-            return isset($this->array[$key]) ? $this->array[$key] : $this->defaultValue($key, $default);
+            return $this->array[$key] ?? $this->defaultValue($key, $default);
         }
 
         $keyArray = explode($this->separator, $key);
