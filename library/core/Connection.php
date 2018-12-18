@@ -140,7 +140,7 @@ abstract class Connection
                 $this->links[$linkNum] = new PDO($config['dsn'], $config['username'], $config['password'], $params);
             } catch (\PDOException $e) {
                 if ($autoConnection) {
-                    return $this->connect($config, $linkNum, $autoConnection);
+                    return $this->connect($config, $linkNum);
                 } else {
                     throw $e;
                 }
