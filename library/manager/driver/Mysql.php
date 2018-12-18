@@ -8,11 +8,19 @@
 
 namespace tpr\db\manager\driver;
 
-class Mysql extends Driver implements DriverInterface
+use tpr\db\manager\mysql\Database;
+
+class Mysql extends Driver
 {
-    public function createDatabase()
+    public function database($name, $charset = null, $collate = null)
     {
-        // TODO: Implement createDatabase() method.
+        $Database = new Database($this->query, $this->options);
+        $Database->setDatabaseName($name);
+        $charset = is_null($charset) ? $this->options->get('charset', 'utf8') : $charset;
+        $Database->setCharSet($charset);
+        $collate = is_null($collate) ? $charset . '_general_ci' : $collate;
+        $Database->setCollate($collate);
+        return $Database;
     }
 
     public function createTable()
@@ -23,5 +31,13 @@ class Mysql extends Driver implements DriverInterface
     public function createField()
     {
         // TODO: Implement createField() method.
+    }
+
+    public function query($sql){
+        $this->query->query($sql);
+    }
+
+    public function create(){
+
     }
 }
