@@ -8,7 +8,7 @@
 
 namespace tpr\db\manager\mysql;
 
-use http\Exception\InvalidArgumentException;
+use \tpr\db\exception\InvalidArgumentException;
 
 class Sql
 {
@@ -22,7 +22,9 @@ class Sql
     {
         $check = self::checkElement($opt, $data);
         if ($check !== true) {
-            throw new InvalidArgumentException("`" . $check . "` not exist!");
+            $e = new InvalidArgumentException("`" . $check . "` not exist! : ");
+            $e->setArguments($data);
+            throw $e;
         }
         $sql = self::getSqlTemplate($opt);
 
@@ -56,7 +58,7 @@ class Sql
         }
 
         foreach ($need_key as $key) {
-            if (!is_null($data[$key])) {
+            if (!isset($data[$key])) {
                 return $key;
             }
         }
