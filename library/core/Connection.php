@@ -86,10 +86,13 @@ abstract class Connection
         return new $class($this);
     }
 
-    public function getConfig($config_name = null)
+    public function getConfig($config_name = null, $default = null)
     {
-        if (!isset($this->config[$config_name]) || is_null($config_name)) {
+        if (is_null($config_name)) {
             return $this->config;
+        }
+        if (!isset($this->config[$config_name])) {
+            return $default;
         }
         return $this->config[$config_name];
     }
