@@ -16,78 +16,66 @@ abstract class Driver
     /**
      * @var ArrayTool
      */
-    protected $options;
+    protected static $options;
 
     /**
      * @var array
      */
-    protected $sql = [];
+    protected static $sql = [];
 
     /**
      * @var Connection
      */
-    protected $query;
+    protected static $query;
 
     /**
      * @var array
      */
-    protected $result = [];
+    protected static $result = [];
 
-    public function __construct($query)
+    public function __construct()
     {
-        $this->setQuery($query);
-        if (is_null($this->options)) {
-            $this->options = ArrayTool::instance($this->query->getConfig());
+        if (is_null(self::$options)) {
+            self::$options = ArrayTool::instance([]);
         }
     }
 
     public function setQuery($query)
     {
-        $this->query = $query;
+        self::$query = $query;
+        $this->setOption(self::$query->getConfig());
         return $this;
     }
 
     public function setOption($key, $value = null)
     {
-        $this->options->set($key, $value);
+        self::$options->set($key, $value);
     }
 
     public function getOptions($key = null, $default = null)
     {
-        return $this->options->get($key, $default);
+        return self::$options->get($key, $default);
     }
 
     protected function pushSql($sql)
     {
         // 判断是否已存在相同sql,避免重复操作
-        if (!in_array($sql, $this->sql)) {
-            array_push($this->sql, $sql);
+        if (!in_array($sql, self::$sql)) {
+            array_push(self::$sql, $sql);
         }
         return $this;
     }
 
-    protected function execSql()
+    public function execSql()
     {
-        foreach ($this->sql as $sql) {
-            $this->result[$sql] = $this->query->query($sql);
+        foreach (self::$sql as $sql) {
+            self::$result[$sql] = self::$query->query($sql);
         }
-        return $this->result;
+        return self::$result;
     }
 
-    protected function viewSql()
+    public function viewSql()
     {
-        return $this->sql;
-    }
-
-    protected function formatTableName($table_name)
-    {
-        $prefix  = $this->query->getConfig('prefix', '');
-        $db_name = $this->query->getConfig('database');
-        return $this->formatDbName($db_name) . '.`' . $prefix . $table_name . '`';
-    }
-
-    protected function formatDbName($db_name)
-    {
-        return '`' . $db_name . '`';
+        return self::$sql;
     }
 }
