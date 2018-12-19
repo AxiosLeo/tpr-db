@@ -59,7 +59,10 @@ abstract class Driver
 
     protected function pushSql($sql)
     {
-        array_push($this->sql, $sql);
+        // 判断是否已存在相同sql,避免重复操作
+        if (!in_array($sql, $this->sql)) {
+            array_push($this->sql, $sql);
+        }
         return $this;
     }
 
