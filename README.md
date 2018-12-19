@@ -65,3 +65,6 @@ class Mysql extends DbFacade
     }
 }
 ```
+
+## DbManager 数据库管理功能 (开发中)
+> 使用示例 [manager_mysql.php](https://github.com/AxiosCros/tpr-db/blob/master/example/manager_mysql.php)
