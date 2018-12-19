@@ -8,20 +8,21 @@
 
 namespace tpr\db\manager\mysql;
 
-class Database
+use tpr\db\core\Connection;
+use tpr\db\manager\driver\Driver;
+
+class Database extends Driver
 {
-    const CREATE_DATABASE = 'db.create';
+    /**
+     * @var Connection
+     */
+    private $query;
 
     private $db_name;
 
-    private $charset;
+    private $charset = Charset::Utf8;
 
-    private $collate;
-
-    public function __construct($quer)
-    {
-        $this->query = $query;
-    }
+    private $collate = Charset::Utf8 . '_general_ci';
 
     public function setDatabaseName($name)
     {
@@ -41,6 +42,14 @@ class Database
         return $this;
     }
 
+    public function table($table_name)
+    {
+        $prefix     = $this->query->getConfig('prefix', '');
+        $table_name = '`' . $this->db_name . '`.`' . $prefix . $table_name . '`';
+        $Table      = new Table($table_name);
+        return $Table;
+    }
+
     public function create()
     {
         $data = [
@@ -48,6 +57,18 @@ class Database
             'charset' => $this->charset,
             'collate' => $this->collate
         ];
-        $sql  = Sql::getSql(self::CREATE_DATABASE, $data);
+        $sql  = Sql::getSql(Sql::DB_CREATE, $data);
+        $this->pushSql($sql);
+        return $this;
+    }
+
+    public function delete()
+    {
+        $data = [
+            'name' => $this->formatDbName($this->db_name)
+        ];
+        $sql  = Sql::getSql(Sql::DB_DELETE, $data);
+        $this->pushSql($sql);
+        return $this;
     }
 }
