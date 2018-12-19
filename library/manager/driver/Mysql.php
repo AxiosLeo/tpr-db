@@ -12,32 +12,36 @@ use tpr\db\manager\mysql\Database;
 
 class Mysql extends Driver
 {
-    public function database($name, $charset = null, $collate = null)
+    private $db_name;
+
+    /**
+     * @var Database
+     */
+    private static $DatabaseInstance;
+
+    public function __construct($query)
     {
-        $Database = new Database($this->query, $this->options);
-        $Database->setDatabaseName($name);
-        $charset = is_null($charset) ? $this->options->get('charset', 'utf8') : $charset;
-        $Database->setCharSet($charset);
-        $collate = is_null($collate) ? $charset . '_general_ci' : $collate;
-        $Database->setCollate($collate);
-        return $Database;
+        parent::__construct($query);
+        $this->db_name = $this->options->get('database');
     }
 
-    public function createTable()
+    /**
+     * @param null $db_name
+     *
+     * @return Database
+     */
+    public function database($db_name = null)
     {
-        // TODO: Implement createTable() method.
-    }
-
-    public function createField()
-    {
-        // TODO: Implement createField() method.
-    }
-
-    public function query($sql){
-        $this->query->query($sql);
-    }
-
-    public function create(){
-
+        if (is_null($db_name)) {
+            $db_name = $this->db_name;
+        }
+        if (is_null(self::$DatabaseInstance)) {
+            self::$DatabaseInstance = new Database($this->query);
+            self::$DatabaseInstance->setDatabaseName($db_name);
+        } elseif (!is_null($db_name) && $db_name != $this->db_name) {
+            $this->db_name = $db_name;
+            self::$DatabaseInstance->setDatabaseName($this->db_name);
+        }
+        return self::$DatabaseInstance;
     }
 }
