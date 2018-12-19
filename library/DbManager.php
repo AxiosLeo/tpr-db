@@ -48,7 +48,8 @@ class DbManager
             $this->query    = DbClient::newCon($con_name, $config);
             $this->checkType($db_type);
             $class        = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
-            $this->driver = new $class($this->query);
+            $this->driver = new $class();
+            $this->driver->setQuery($this->query);
             $this->driver->database($this->query->getConfig('database'));
         } elseif (!empty($config)) {
             $config_before = $this->query->getConfig();
