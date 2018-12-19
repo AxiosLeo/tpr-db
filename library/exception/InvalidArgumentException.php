@@ -1,9 +1,8 @@
 <?php
 /**
- * @author: axios
- *
- * @email: axiosleo@foxmail.com
- * @blog:  http://hanxv.cn
+ * @author  : axios
+ * @email   : axiosleo@foxmail.com
+ * @blog    :  http://hanxv.cn
  * @datetime: 2018/4/10 10:43
  */
 
@@ -13,10 +12,13 @@ use Throwable;
 
 class InvalidArgumentException extends Exception
 {
+    protected $arguments = [];
+
     /**
      * InvalidArgumentException constructor.
-     * @param string $message
-     * @param int $code
+     *
+     * @param string         $message
+     * @param int            $code
      * @param Throwable|null $previous
      */
     public function __construct($message = "InvalidArgument", $code = 0, Throwable $previous = null)
@@ -26,9 +28,19 @@ class InvalidArgumentException extends Exception
         $this->message = $message;
         $this->code    = $code;
 
-        $this->setData('InvalidArgument',[
+        $this->setData('InvalidArgument', [
             'Error Code'    => $code,
             'Error Message' => $message
         ]);
+    }
+
+    public function setArguments($arguments = [])
+    {
+        $this->arguments = $arguments;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 }
