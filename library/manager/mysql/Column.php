@@ -8,15 +8,13 @@
 
 namespace tpr\db\manager\mysql;
 
-use tpr\db\manager\driver\Driver;
+use tpr\db\manager\driver\Mysql;
 
-class Column extends Driver
+class Column extends Mysql
 {
     private $table_name;
 
     private $column_name;
-
-    private $datatype = "";
 
     public function setTableName($table_name)
     {
@@ -30,23 +28,15 @@ class Column extends Driver
         return $this;
     }
 
-    public function setDataType($charset = '', $collate = '')
-    {
-        $data = [
-            'charset' => $charset,
-            'collate' => $collate
-        ];
-        Sql::getSql(Sql::DATATYPE, $data);
-    }
-
     public function add()
     {
         $data = [
-            'table_name'  => $this->table_name,
-            'column_name' => '`' . $this->column_name . '`',
-            'datatype'    => $this->datatype
+            'table_name'  => $this->formatTableName($this->table_name),
+            'column_name' => $this->formatTableName($this->column_name),
+            'datatype'    => $this->getDataType()
         ];
         $sql  = Sql::getSql(Sql::COLUMN_ADD, $data);
+        $this->pushSql($sql);
         return $sql;
     }
 }

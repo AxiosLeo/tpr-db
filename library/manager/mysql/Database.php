@@ -8,15 +8,10 @@
 
 namespace tpr\db\manager\mysql;
 
-use tpr\db\core\Connection;
-use tpr\db\manager\driver\Driver;
+use tpr\db\manager\driver\Mysql;
 
-class Database extends Driver
+class Database extends Mysql
 {
-    /**
-     * @var Connection
-     */
-    private $query;
 
     private $db_name;
 
@@ -44,9 +39,8 @@ class Database extends Driver
 
     public function table($table_name)
     {
-        $prefix     = $this->query->getConfig('prefix', '');
-        $table_name = '`' . $this->db_name . '`.`' . $prefix . $table_name . '`';
-        $Table      = new Table($table_name);
+        $Table      = new Table();
+        $Table->setTableName($table_name);
         return $Table;
     }
 

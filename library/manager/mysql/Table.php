@@ -8,9 +8,9 @@
 
 namespace tpr\db\manager\mysql;
 
-use tpr\db\manager\driver\Driver;
+use tpr\db\manager\driver\Mysql;
 
-class Table extends Driver
+class Table extends Mysql
 {
     private $table_name;
 
@@ -22,7 +22,7 @@ class Table extends Driver
 
     public function column($column_name)
     {
-        $Column = new Column($this->query);
+        $Column = new Column();
         $Column->setTableName($this->table_name)
             ->setColumnName($column_name);
         return $Column;
