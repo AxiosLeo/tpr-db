@@ -18,6 +18,9 @@ abstract class Driver
      */
     protected $options;
 
+    /**
+     * @var array
+     */
     protected $sql = [];
 
     /**
@@ -25,12 +28,23 @@ abstract class Driver
      */
     protected $query;
 
+    /**
+     * @var array
+     */
+    protected $result = [];
+
     public function __construct($query)
     {
-        $this->query = $query;
+        $this->setQuery($query);
         if (is_null($this->options)) {
             $this->options = ArrayTool::instance($this->query->getConfig());
         }
+    }
+
+    public function setQuery($query)
+    {
+        $this->query = $query;
+        return $this;
     }
 
     public function setOption($key, $value = null)
@@ -46,11 +60,31 @@ abstract class Driver
     protected function pushSql($sql)
     {
         array_push($this->sql, $sql);
+        return $this;
     }
 
-//    abstract public function createDatabase($name);
-//
-//    abstract public function createTable();
-//
-//    abstract public function createField();
+    protected function execSql()
+    {
+        foreach ($this->sql as $sql) {
+            $this->result[$sql] = $this->query->query($sql);
+        }
+        return $this->result;
+    }
+
+    protected function viewSql()
+    {
+        return $this->sql;
+    }
+
+    protected function formatTableName($table_name)
+    {
+        $prefix  = $this->query->getConfig('prefix', '');
+        $db_name = $this->query->getConfig('database');
+        return $this->formatDbName($db_name) . '.`' . $prefix . $table_name . '`';
+    }
+
+    protected function formatDbName($db_name)
+    {
+        return '`' . $db_name . '`';
+    }
 }
