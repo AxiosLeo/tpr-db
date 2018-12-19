@@ -9,20 +9,22 @@
 namespace tpr\db;
 
 use tpr\db\exception\DatabaseTypeErrorException;
-use tpr\db\manager\driver\Driver;
+use \tpr\db\manager\driver\Mysql;
 
+/**
+ * Class DbManager
+ * @package tpr\db
+ * @method Mysql mysql($con_name = '', $config = [])
+ */
 class DbManager
 {
     /**
-     * @param string $con_name
-     * @param array  $config
-     *
      * @return DbManager
      * @throws DatabaseTypeErrorException
      */
-    public static function instance($con_name, $config = [])
+    public static function instance()
     {
-        return new self($con_name, $config);
+        return new self();
     }
 
     protected $support = [
@@ -35,38 +37,41 @@ class DbManager
     private $query;
 
     /**
-     * @var Driver
+     * @var Mysql
      */
     private $driver;
 
-    public function __construct($con_name, $config = [])
+    protected function initDriver($db_type = '', $con_name = '', $config = [])
     {
-        $this->query = DbClient::newCon($con_name, $config);
-        $db_type     = $this->query->getConfig('type');
+        if (is_null($this->driver)) {
+            $config['type'] = $db_type;
+            $this->query    = DbClient::newCon($con_name, $config);
+            $this->checkType($db_type);
+            $class        = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
+            $this->driver = new $class($this->query);
+            $this->driver->database($this->query->getConfig('database'));
+        } elseif (!empty($config)) {
+            $config_before = $this->query->getConfig();
+            $config        = array_merge($config_before, $config);
+            DbClient::closeCon($con_name);
+            $this->query = DbClient::newCon($con_name, $config);
+            $this->driver->setQuery($this->query);
+            $this->driver->database($this->query->getConfig('database'));
+        }
+        return $this->driver;
+    }
+
+    private function checkType($db_type)
+    {
         if (!in_array($db_type, $this->support)) {
             $support = implode('|', $this->support);
             throw new DatabaseTypeErrorException("Database Type are not supported!  Only support " . $support);
         }
-        $class        = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
-        $this->driver = new $class($this->query);
     }
 
-    /**
-     * @return Driver
-     */
-    public function driver()
+    public function __call($name, $arguments)
     {
-        return $this->driver;
-    }
-
-    public function setOptions($key, $value = null)
-    {
-        $this->driver->setOption($key, $value);
-        return $this;
-    }
-
-    public function getOptions($key = null, $default = null)
-    {
-        return $this->driver->getOptions($key, $default);
+        array_unshift($arguments, $name);
+        return call_user_func_array([$this, 'initDriver'], $arguments);
     }
 }
