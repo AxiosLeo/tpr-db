@@ -13,6 +13,7 @@ use tpr\db\core\Query;
 /**
  * Class Db
  * @package tpr\framework
+ * @method string|array getConfig($name = '') static 获取数据库的配置参数
  * @method Query table(string $table) static 指定数据表（含前缀）
  * @method Query name(string $name) static 指定数据表（不含前缀）
  * @method Query where(mixed $field, string $op = null, mixed $condition = null) static 查询条件
