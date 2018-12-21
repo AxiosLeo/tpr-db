@@ -35,8 +35,7 @@ class Column extends Mysql
             'column_name' => $this->formatTableName($this->column_name),
             'datatype'    => $this->getDataType()
         ];
-        $sql  = Sql::getSql(Sql::COLUMN_ADD, $data);
-        $this->pushSql($sql);
+        $sql  = Sql::getSql(Operation::COLUMN_ADD, $data);
         return $sql;
     }
 }
