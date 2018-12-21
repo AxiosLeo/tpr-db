@@ -11,11 +11,19 @@ namespace tpr\db\manager\driver;
 use tpr\db\manager\mysql\Charset;
 use tpr\db\manager\mysql\Collate;
 use tpr\db\manager\mysql\Database;
+use tpr\db\manager\mysql\Engine;
+use tpr\db\manager\mysql\Operation;
 use tpr\db\manager\mysql\Sql;
 
 class Mysql extends Driver
 {
-    private $db_name;
+    protected $db_name;
+
+    protected $curr_sql = null;
+
+    protected $operation = null;
+
+    protected $sql_data = [];
 
     /**
      * @var Database
@@ -26,6 +34,21 @@ class Mysql extends Driver
 
     protected $collate = Collate::General;
 
+    protected $engine = Engine::InnoDB;
+
+    protected $auto_increment = 1;
+
+    public function dbName($db_name = null)
+    {
+        if (is_null($db_name)) {
+            return $this->db_name;
+        } else if ($db_name != $this->db_name) {
+            $this->db_name = $db_name;
+            $this->query->setConfig('database', $this->db_name);
+        }
+        return $this->db_name;
+    }
+
     /**
      * @param null $db_name
      *
@@ -34,14 +57,13 @@ class Mysql extends Driver
     public function database($db_name = null)
     {
         if (is_null($db_name)) {
-            $db_name = $this->db_name;
+            $db_name = $this->dbName();
         }
         if (is_null(self::$DatabaseInstance)) {
             self::$DatabaseInstance = new Database();
-            self::$DatabaseInstance->setDatabaseName($db_name);
-        } elseif (!is_null($db_name) && $db_name != $this->db_name) {
-            $this->db_name = $db_name;
-            self::$DatabaseInstance->setDatabaseName($this->db_name);
+            self::$DatabaseInstance->dbName($db_name);
+        } elseif (!is_null($db_name) && $db_name != $this->dbName()) {
+            self::$DatabaseInstance->dbName($this->dbName($db_name));
         }
         return self::$DatabaseInstance;
     }
@@ -66,7 +88,7 @@ class Mysql extends Driver
             'collate' => $collate
         ];
 
-        return Sql::getSql(Sql::DATATYPE, $data);
+        return Sql::getSql(Operation::DATATYPE, $data);
     }
 
     protected function formatDbName($db_name)
@@ -76,13 +98,37 @@ class Mysql extends Driver
 
     protected function formatTableName($table_name)
     {
-        $prefix  = self::$query->getConfig('prefix', '');
-        $db_name =  self::$query->getConfig('database');
+        $prefix = $this->query->getConfig('prefix', '');
+        if (strpos($table_name, '.') !== false) {
+            list($db_name, $table_name) = explode('.', $table_name);
+        } else {
+            $db_name = $this->dbName();
+        }
+
         return $this->formatDbName($db_name) . '.`' . $prefix . $table_name . '`';
     }
 
     protected function formatColumn($column_name)
     {
         return '`' . $column_name . '`';
+    }
+
+    public function buildSql()
+    {
+        $this->curr_sql = Sql::getSql($this->operation, $this->sql_data);
+        return $this->curr_sql;
+    }
+
+    public function exec()
+    {
+        $sql = $this->buildSql();
+        return $this->query->query($sql);
+    }
+
+    protected function clear()
+    {
+        $this->curr_sql  = null;
+        $this->sql_data  = [];
+        $this->operation = null;
     }
 }

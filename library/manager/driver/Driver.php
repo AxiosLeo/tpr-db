@@ -19,32 +19,31 @@ abstract class Driver
     protected static $options;
 
     /**
-     * @var array
-     */
-    protected static $sql = [];
-
-    /**
      * @var Connection
      */
-    protected static $query;
+    protected static $queryInstance;
 
-    /**
-     * @var array
-     */
-    protected static $result = [];
+    protected $query;
 
     public function __construct()
     {
         if (is_null(self::$options)) {
             self::$options = ArrayTool::instance([]);
         }
+        $this->query = self::$queryInstance;
     }
 
     public function setQuery($query)
     {
-        self::$query = $query;
-        $this->setOption(self::$query->getConfig());
+        $this->query         = $query;
+        self::$queryInstance = $query;
+        $this->setOption(self::$queryInstance->getConfig());
         return $this;
+    }
+
+    public function getQuery()
+    {
+        return self::$queryInstance;
     }
 
     public function setOption($key, $value = null)
@@ -55,27 +54,5 @@ abstract class Driver
     public function getOptions($key = null, $default = null)
     {
         return self::$options->get($key, $default);
-    }
-
-    protected function pushSql($sql)
-    {
-        // 判断是否已存在相同sql,避免重复操作
-        if (!in_array($sql, self::$sql)) {
-            array_push(self::$sql, $sql);
-        }
-        return $this;
-    }
-
-    public function execSql()
-    {
-        foreach (self::$sql as $sql) {
-            self::$result[$sql] = self::$query->query($sql);
-        }
-        return self::$result;
-    }
-
-    public function viewSql()
-    {
-        return self::$sql;
     }
 }
