@@ -12,19 +12,6 @@ use tpr\db\manager\driver\Mysql;
 
 class Database extends Mysql
 {
-
-    private $db_name;
-
-    private $charset = Charset::Utf8;
-
-    private $collate = Charset::Utf8 . '_general_ci';
-
-    public function setDatabaseName($name)
-    {
-        $this->db_name = $name;
-        return $this;
-    }
-
     public function setCharSet($charset = null)
     {
         $this->charset = $charset;
@@ -39,30 +26,44 @@ class Database extends Mysql
 
     public function table($table_name)
     {
-        $Table      = new Table();
+        $Table = new Table();
         $Table->setTableName($table_name);
+        $Table->dbName($this->db_name);
         return $Table;
+    }
+
+    public function getTableList()
+    {
+        $sql    = Sql::getSql(Operation::TABLE_SHOW, [
+            "name" => $this->db_name
+        ]);
+        $tables = $this->query->query($sql);
+        $list   = [];
+        foreach ($tables as $t) {
+            foreach ($t as $k => $v) {
+                array_push($list, $v);
+            }
+        }
+        return $list;
     }
 
     public function create()
     {
-        $data = [
+        $this->sql_data  = [
             'name'    => $this->db_name,
             'charset' => $this->charset,
-            'collate' => $this->collate
+            'collate' => $this->charset . $this->collate
         ];
-        $sql  = Sql::getSql(Sql::DB_CREATE, $data);
-        $this->pushSql($sql);
+        $this->operation = Operation::DB_CREATE;
         return $this;
     }
 
     public function delete()
     {
-        $data = [
+        $this->sql_data  = [
             'name' => $this->formatDbName($this->db_name)
         ];
-        $sql  = Sql::getSql(Sql::DB_DELETE, $data);
-        $this->pushSql($sql);
+        $this->operation = Operation::DB_DELETE;
         return $this;
     }
 }
