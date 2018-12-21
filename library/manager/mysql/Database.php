@@ -28,14 +28,14 @@ class Database extends Mysql
     {
         $Table = new Table();
         $Table->setTableName($table_name);
-        $Table->dbName($this->db_name);
+        $Table->dbName($this->dbName());
         return $Table;
     }
 
     public function getTableList()
     {
         $sql    = Sql::getSql(Operation::TABLE_SHOW, [
-            "name" => $this->db_name
+            "name" => $this->dbName()
         ]);
         $tables = $this->query->query($sql);
         $list   = [];
@@ -50,7 +50,7 @@ class Database extends Mysql
     public function create()
     {
         $this->sql_data  = [
-            'name'    => $this->db_name,
+            'name'    => $this->dbName(),
             'charset' => $this->charset,
             'collate' => $this->charset . $this->collate
         ];
@@ -61,7 +61,7 @@ class Database extends Mysql
     public function delete()
     {
         $this->sql_data  = [
-            'name' => $this->formatDbName($this->db_name)
+            'name' => $this->formatDbName($this->dbName())
         ];
         $this->operation = Operation::DB_DELETE;
         return $this;
