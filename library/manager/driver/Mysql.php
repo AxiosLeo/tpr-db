@@ -8,6 +8,7 @@
 
 namespace tpr\db\manager\driver;
 
+use tpr\db\core\ArrayTool;
 use tpr\db\manager\mysql\Charset;
 use tpr\db\manager\mysql\Collate;
 use tpr\db\manager\mysql\Database;
@@ -47,6 +48,19 @@ class Mysql extends Driver
             $this->query->setConfig('database', $this->db_name);
         }
         return $this->db_name;
+    }
+
+    public function dbExist($db_name)
+    {
+        $sql    = Sql::getSql('db.exist', [
+            'name' => '\''.$db_name.'\''
+        ]);
+        $result = $this->query->query($sql);
+        $t      = new ArrayTool($result);
+        $r      = $t->get('0.exist', 0) ? true : false;
+        unset($t);
+        unset($sql);
+        return $r;
     }
 
     /**
