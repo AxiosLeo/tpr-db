@@ -14,12 +14,6 @@ class Table extends Mysql
 {
     private $table_name;
 
-    private $engine = Engine::InnoDB;
-
-    private $auto_increment = 1;
-
-    private $charset = Charset::Utf8;
-
     public function column($column_name)
     {
         $Column = new Column();
@@ -52,14 +46,48 @@ class Table extends Mysql
         return $this;
     }
 
-    public function create()
+    public function create($sys_table = null)
     {
-        $data = [
-            'table_name'     => $this->table_name,
-            'engine'         => $this->engine,
-            'auto_increment' => $this->auto_increment,
-            'charset'        => $this->charset
+        if (is_null($sys_table)) {
+            $this->operation = Operation::TABLE_CREATE;
+
+            $this->sql_data = [
+                'table_name'     => $this->formatTableName($this->table_name),
+                'engine'         => $this->engine,
+                'auto_increment' => $this->auto_increment,
+                'charset'        => $this->charset
+            ];
+        } else {
+            $this->operation = Operation::TABLE_SYS;
+            $this->sql_data  = [
+                'table_name' => $this->formatTableName($this->table_name),
+                'like'       => ' LIKE ' . $this->formatTableName($sys_table)
+            ];
+        }
+
+        return $this;
+    }
+
+    public function delete()
+    {
+        $this->operation = Operation::TABLE_DELETE;
+        $this->sql_data  = [
+            'table_name' => $this->formatTableName($this->table_name)
         ];
-        return Sql::getSql(Sql::TABLE_CREATE, $data);
+        return $this;
+    }
+
+    public function sysData($source_db, $source_table = null)
+    {
+        $curr_db = $this->dbName();
+        $this->dbName($source_db);
+        $sql = $this->query->table($source_db . '.' . $source_table)->fetchSql()->select();
+        $this->dbName($curr_db);
+        $this->operation = Operation::TABLE_SYS_DATA;
+        $this->sql_data  = [
+            'table_name' => $this->formatTableName($this->table_name),
+            'sql'        => $sql
+        ];
+        return $this;
     }
 }
