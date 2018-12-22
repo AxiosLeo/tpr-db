@@ -24,6 +24,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 // 数据库管理实例，目前只支持mysql数据库操作
 $DBM = DbManager::instance()->mysql('mysql.db_manager', $database_config);
+// mysql.db_manager 是连接名，相同的名称获取到的是同一个driver
+// 也就是第二次调用mysql方法时，可以不用设置$database_config，通过连接名直接获取driver
 
 // 源数据库名称
 $source_db = 'source_db_name';
