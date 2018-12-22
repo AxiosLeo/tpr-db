@@ -34,7 +34,7 @@ $target_db = 'target_db_name';
 
 // 判断源数据库是否存在
 $is_exist = $DBM->dbExist($source_db);
-if(!$is_exist){
+if (!$is_exist) {
     echo $source_db . "数据库不存在";
     die();
 }
@@ -47,9 +47,13 @@ $tables = $DBM->database($source_db)->getTableList();
 
 // 遍历所有表，并同步源数据库数据表中的数据至目标数据库中同名数据表
 foreach ($tables as $table) {
+    // 数据表实例
     $Table = $DBM->database($target_db)->table($table);
+    // 删除已有表
     $Table->delete()->exec();
+    // 创建数据表
     $Table->create($source_db . '.' . $table)->exec();
+    // 同步数据
     $Table->sysData($source_db, $table)->exec();
     unset($Table);
 }
