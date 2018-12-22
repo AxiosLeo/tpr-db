@@ -5,10 +5,12 @@
  * @blog    : http://hanxv.cn
  * @datetime: 2018-12-19 15:26
  */
+
 namespace tpr\db\manager;
 
 use tpr\db\DbManager;
 
+// 数据库配置
 $database_config = [
     "type"     => 'mysql',
     "hostname" => '127.0.0.1',
@@ -20,10 +22,32 @@ $database_config = [
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$DbM = DbManager::instance()->mysql('test', $database_config);
-$DbM->database()
-    ->table('test')
-    ->column('test')
-    ->add();
+// 数据库管理实例，目前只支持mysql数据库操作
+$DBM = DbManager::instance()->mysql('mysql.db_manager', $database_config);
 
-print_r($DbM->viewSql());
+// 源数据库名称
+$source_db = 'source_db_name';
+// 目标数据库名称
+$target_db = 'target_db_name';
+
+// 判断源数据库是否存在
+$is_exist = $DBM->dbExist($source_db);
+if(!$is_exist){
+    echo $source_db . "数据库不存在";
+    die();
+}
+
+// 创建目标数据库
+$DBM->database($target_db)->create()->exec();
+
+// 获取源数据库的数据表列表
+$tables = $DBM->database($source_db)->getTableList();
+
+// 遍历所有表，并同步源数据库数据表中的数据至目标数据库中同名数据表
+foreach ($tables as $table) {
+    $Table = $DBM->database($target_db)->table($table);
+    $Table->delete()->exec();
+    $Table->create($source_db . '.' . $table)->exec();
+    $Table->sysData($source_db, $table)->exec();
+    unset($Table);
+}
