@@ -45,7 +45,7 @@ class Mysql extends Driver
             return $this->db_name;
         } else if ($db_name != $this->db_name) {
             $this->db_name = $db_name;
-            $this->query->setConfig('database', $this->db_name);
+            $this->setOption('database', $this->db_name);
         }
         return $this->db_name;
     }
@@ -53,7 +53,7 @@ class Mysql extends Driver
     public function dbExist($db_name)
     {
         $sql    = Sql::getSql('db.exist', [
-            'name' => '\''.$db_name.'\''
+            'name' => "'" . $db_name . "'"
         ]);
         $result = $this->query->query($sql);
         $t      = new ArrayTool($result);
