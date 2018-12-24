@@ -38,10 +38,11 @@ class DbManager
 
     protected function initDriver($db_type = '', $con_name = "", $config = [])
     {
-        if (is_null($this->driver[$con_name])) {
+        if (!isset($this->driver[$con_name])) {
             $config['type'] = $db_type;
             $this->checkType($db_type);
-            $class                   = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
+            $class = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
+
             $this->driver[$con_name] = new $class();
             $this->driver[$con_name]->setOption($config);
         } elseif (!empty($config)) {
