@@ -40,7 +40,7 @@ if (!$is_exist) {
 }
 
 // 创建目标数据库
-$DBM->database($target_db)->create()->exec();
+$DBM->database()->create($target_db)->exec();
 
 // 获取源数据库的数据表列表
 $tables = $DBM->database($source_db)->getTableList();
