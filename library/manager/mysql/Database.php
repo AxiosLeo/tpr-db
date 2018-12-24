@@ -95,7 +95,7 @@ class Database extends Mysql
             while ($tmp > 0) {
                 $m++;
                 $filename_data = $mode == 2 ? $this->filePath($path . $table) . 'data_' . $m . '.sql' : $filename;
-                $data          = $this->query->table($table)->limit($limit)->select();
+                $data          = $this->query->table($table)->page($m)->limit($limit)->select();
                 foreach ($data as $d) {
                     $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
