@@ -90,10 +90,14 @@ class Database extends Mysql
 
     public function outputAllData($path, $tables = "", $limit = 1000)
     {
+        $path = $this->filePath($path);
+
         if (!empty($tables)) {
             if (!is_array($tables)) {
                 $tables = explode(',', $tables);
             }
+        } else {
+            $tables = $this->getTableList();
         }
 
         foreach ($tables as $table) {
@@ -103,7 +107,7 @@ class Database extends Mysql
             $table_name = '`' . $table . '`';
             while ($total > 0) {
                 $m++;
-                $filename_data = $this->filePath($path . $table) . 'data_' . $m . '.sql';
+                $filename_data = $this->filePath($path . $table) . "page_" . $m . '.sql';
                 $data          = $this->query->table($table)->page($m)->limit($limit)->select();
                 foreach ($data as $d) {
                     $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
