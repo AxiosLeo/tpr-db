@@ -14,7 +14,7 @@ use \tpr\db\manager\driver\Mysql;
 /**
  * Class DbManager
  * @package tpr\db
- * @method Mysql mysql($con_name = '', $config = [])
+ * @method Mysql mysql($con_name = "", $config = [])
  */
 class DbManager
 {
@@ -32,34 +32,22 @@ class DbManager
     ];
 
     /**
-     * @var core\Connection
+     * @var Mysql[]
      */
-    private $query;
+    private $driver = [];
 
-    /**
-     * @var Mysql
-     */
-    private $driver;
-
-    protected function initDriver($db_type = '', $con_name = '', $config = [])
+    protected function initDriver($db_type = '', $con_name = "", $config = [])
     {
         if (is_null($this->driver)) {
             $config['type'] = $db_type;
-            $this->query    = DbClient::newCon($con_name, $config);
             $this->checkType($db_type);
-            $class        = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
-            $this->driver = new $class();
-            $this->driver->setQuery($this->query);
-            $this->driver->database($this->query->getConfig('database'));
+            $class                   = "tpr\\db\\manager\\driver\\" . ucfirst(strtolower($db_type));
+            $this->driver[$con_name] = new $class();
+            $this->driver[$con_name]->setOption($config);
         } elseif (!empty($config)) {
-            $config_before = $this->query->getConfig();
-            $config        = array_merge($config_before, $config);
-            DbClient::closeCon($con_name);
-            $this->query = DbClient::newCon($con_name, $config);
-            $this->driver->setQuery($this->query);
-            $this->driver->database($this->query->getConfig('database'));
+            $this->driver[$con_name]->setOption($config);
         }
-        return $this->driver;
+        return $this->driver[$con_name];
     }
 
     private function checkType($db_type)
