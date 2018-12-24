@@ -57,3 +57,6 @@ foreach ($tables as $table) {
     $Table->sysData($source_db, $table)->exec();
     unset($Table);
 }
+
+// 将源数据库的所有数据导出为sql文件
+$DBM->database($source_db)->saveAllData(__DIR__);
