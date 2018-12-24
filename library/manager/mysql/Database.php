@@ -67,11 +67,9 @@ class Database extends Mysql
         return $this;
     }
 
-    public function saveAllData($path = '', $name = '')
+    public function saveAllData($path = '', $mode = 0, $limit = 100, $name = '')
     {
-        if (!file_exists($path)) {
-            return false;
-        }
+        $path = $this->filePath($path);
         if (empty($name)) {
             $name = $this->dbName();
         }
@@ -88,21 +86,35 @@ class Database extends Mysql
         foreach ($tables as $table) {
             $table_name = '`' . $table . '`';
 
+            $filename_table = $mode ? $path . $table . '.sql' : $filename;
             // create table sql
-            $this->saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)), 3);
+            $this->saveFile($filename_table, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)), 3);
             // insert data sql
             $tmp = $this->query->table($table)->count();
+            $m   = 0;
             while ($tmp > 0) {
-                $limit = 10;
-                $data  = $this->query->table($table)->limit($limit)->select();
+                $m++;
+                $filename_data = $mode == 2 ? $this->filePath($path . $table) . 'data_' . $m . '.sql' : $filename;
+                $data      = $this->query->table($table)->limit($limit)->select();
                 foreach ($data as $d) {
-                    $this->saveFile($filename, $this->buildDataSql($table_name, $d));
+                    $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
                 $tmp = $tmp - $limit;
             }
             $n++;
         }
         return true;
+    }
+
+    private function filePath($path)
+    {
+        $path = substr($path, -1) != '/' ? $path . '/' : $path;
+        if (!file_exists($path)) {
+            if (!mkdir($path, 0700, true)) {
+                return null;
+            }
+        }
+        return $path;
     }
 
     private function saveFile($filename, $sql, $blank = 0)
