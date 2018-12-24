@@ -60,20 +60,20 @@ class Sql
     }
 
     public static $sql = [
-        'db.create'      => "CREATE DATABASE IF NOT EXISTS {name} DEFAULT CHARACTER SET {charset} COLLATE {collate};",
-        'db.delete'      => "DROP DATABASE IF EXISTS {name};",
-        'db.exist'       => "SELECT count(SCHEMA_NAME) AS exist FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME={name}",
-        'db.show'        => "SHOW DATABASES;",
-        'table.show'     => "SHOW TABLES FROM {name};",
-        'table.create'   => "CREATE TABLE {table_name} () ENGINE={engine} AUTO_INCREMENT={auto_increment} DEFAULT CHARSET={charset};",
-        'table.sys'      => "CREATE TABLE {table_name} {like};",
-        'table.sys_data' => "INSERT INTO {table_name} {sql}",
-        'table.delete'   => "DROP TABLE IF EXISTS {table_name};",
-        'index.delete'   => "ALTER TABLE {table_name} DROP INDEX {index_name};",
-        'column.add'     => "ALTER TABLE {table_name} ADD {column_name} {datatype};",
-        'column.delete'  => "ALTER TABLE {table_name} DROP COLUMN {column_name};",
-        'column.update'  => "ALTER TABLE {table_name} MODIFY COLUMN {column_name} {datatype};",
-
-        'datatype' => "CHARACTER SET {charset} COLLATE {collate}",
+        'db.create'        => "CREATE DATABASE IF NOT EXISTS {name} DEFAULT CHARACTER SET {charset} COLLATE {collate};",
+        'db.delete'        => "DROP DATABASE IF EXISTS {name};",
+        'db.exist'         => "SELECT count(SCHEMA_NAME) AS exist FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME={name}",
+        'db.show'          => "SHOW DATABASES;",
+        'table.show'       => "SHOW TABLES FROM {name};",
+        'table.create'     => "CREATE TABLE {table_name} () ENGINE={engine} AUTO_INCREMENT={auto_increment} DEFAULT CHARSET={charset};",
+        'table.sys'        => "CREATE TABLE {table_name} {like};",
+        'table.sys_data'   => "INSERT INTO {table_name} {sql}",
+        'table.delete'     => "DROP TABLE IF EXISTS {table_name};",
+        'index.delete'     => "ALTER TABLE {table_name} DROP INDEX {index_name};",
+        'column.add'       => "ALTER TABLE {table_name} ADD {column_name} {datatype};",
+        'column.delete'    => "ALTER TABLE {table_name} DROP COLUMN {column_name};",
+        'column.update'    => "ALTER TABLE {table_name} MODIFY COLUMN {column_name} {datatype};",
+        'datatype'         => "CHARACTER SET {charset} COLLATE {collate}",
+        'insert.data'      => "INSERT INTO {table_name} VALUES ({values});",
     ];
 }
