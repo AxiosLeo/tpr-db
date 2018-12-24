@@ -47,10 +47,10 @@ class Database extends Mysql
         return $list;
     }
 
-    public function create()
+    public function create($name = null)
     {
         $this->sql_data  = [
-            'name'    => $this->dbName(),
+            'name'    => is_null($name) ? $this->dbName() : $name,
             'charset' => $this->charset,
             'collate' => $this->charset . $this->collate
         ];
@@ -95,7 +95,7 @@ class Database extends Mysql
             while ($tmp > 0) {
                 $m++;
                 $filename_data = $mode == 2 ? $this->filePath($path . $table) . 'data_' . $m . '.sql' : $filename;
-                $data      = $this->query->table($table)->limit($limit)->select();
+                $data          = $this->query->table($table)->limit($limit)->select();
                 foreach ($data as $d) {
                     $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
