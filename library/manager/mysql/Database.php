@@ -88,7 +88,7 @@ class Database extends Mysql
 
             $filename_table = $mode ? $path . $table . '.sql' : $filename;
             // create table sql
-            $this->saveFile($filename_table, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)), 3);
+            $this->saveFile($filename_table, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';', 3);
             // insert data sql
             $tmp = $this->query->table($table)->count();
             $m   = 0;
