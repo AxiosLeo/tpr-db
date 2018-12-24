@@ -73,7 +73,7 @@ abstract class Driver
 
         $query = DbClient::newCon($this->getConName(), $this->getOptions());
 
-        self::$queryInstance = $this->setQuery($query);
+        $this->setQuery($query);
 
         return $this;
     }
