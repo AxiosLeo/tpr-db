@@ -67,7 +67,7 @@ class Database extends Mysql
         return $this;
     }
 
-    public function saveAllData($path = '', $mode = 0, $limit = 100, $name = '')
+    public function outputStructure($path)
     {
         $path = $this->filePath($path);
         if (empty($name)) {
@@ -77,33 +77,41 @@ class Database extends Mysql
         if (file_exists($filename)) {
             @unlink($filename);
         }
+        $create_db_sql = $this->create()->buildSql() . ';';
+        $this->saveFile($filename, $create_db_sql);
+
         $tables = $this->getTableList();
-
-        // create database sql
-        $this->saveFile($filename, $this->create()->buildSql() . ';');
-
-        $n = 0;
         foreach ($tables as $table) {
             $table_name = '`' . $table . '`';
+            $this->saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';', 3);
+        }
+        return $this;
+    }
 
-            $filename_table = $mode ? $path . $table . '.sql' : $filename;
-            // create table sql
-            $this->saveFile($filename_table, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';', 3);
+    public function outputAllData($path, $tables = "", $limit = 1000)
+    {
+        if (!empty($tables)) {
+            if (!is_array($tables)) {
+                $tables = explode(',', $tables);
+            }
+        }
+
+        foreach ($tables as $table) {
             // insert data sql
-            $tmp = $this->query->table($table)->count();
-            $m   = 0;
-            while ($tmp > 0) {
+            $total      = $this->query->table($table)->count();
+            $m          = 0;
+            $table_name = '`' . $table . '`';
+            while ($total > 0) {
                 $m++;
-                $filename_data = $mode == 2 ? $this->filePath($path . $table) . 'data_' . $m . '.sql' : $filename;
+                $filename_data = $this->filePath($path . $table) . 'data_' . $m . '.sql';
                 $data          = $this->query->table($table)->page($m)->limit($limit)->select();
                 foreach ($data as $d) {
                     $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
-                $tmp = $tmp - $limit;
+                $total = $total - $limit;
             }
-            $n++;
         }
-        return true;
+        return $this;
     }
 
     private function filePath($path)
