@@ -8,6 +8,7 @@
 
 namespace tpr\db\manager\mysql;
 
+use tpr\db\DbOptHook;
 use tpr\db\manager\driver\Mysql;
 
 class Database extends Mysql
@@ -105,14 +106,28 @@ class Database extends Mysql
             $total      = $this->query->table($table)->count();
             $m          = 0;
             $table_name = '`' . $table . '`';
+            $params     = [
+                "table"   => $table,
+                "page"    => $m,
+                "limit"   => $limit,
+                "options" => $this->getOptions()
+            ];
+            DbOptHook::listen('output_table_data_begin', $params);
             while ($total > 0) {
                 $m++;
                 $filename_data = $this->filePath($path . $table) . "page_" . $m . '.sql';
                 $data          = $this->query->table($table)->page($m)->limit($limit)->select();
+                $sql           = "";
                 foreach ($data as $d) {
-                    $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
+                    $sql .= $sql . $d . "\r\n";
                 }
-                $total = $total - $limit;
+                $this->saveFile($filename_data, $this->buildDataSql($table_name, $sql));
+                $total  = $total - $limit;
+                $params = [
+                    "data_file_path" => $filename_data,
+                    "sql"            => $sql
+                ];
+                DbOptHook::listen('output_table_data_per_page', $params);
             }
         }
         return $this;
