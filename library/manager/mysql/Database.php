@@ -89,7 +89,7 @@ class Database extends Mysql
         return $this;
     }
 
-    public function outputAllData($path, $tables = "", $limit = 1000)
+    public function outputAllData($path, $tables = "", $limit = 100)
     {
         $path = $this->filePath($path);
 
@@ -113,21 +113,22 @@ class Database extends Mysql
                 "options" => $this->getOptions()
             ];
             DbOptHook::listen('output_table_data_begin', $params);
+            unset($params);
             while ($total > 0) {
                 $m++;
                 $filename_data = $this->filePath($path . $table) . "page_" . $m . '.sql';
                 $data          = $this->query->table($table)->page($m)->limit($limit)->select();
-                $sql           = "";
                 foreach ($data as $d) {
-                    $sql .= $sql . $d . "\r\n";
+                    $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
-                $this->saveFile($filename_data, $this->buildDataSql($table_name, $sql));
                 $total  = $total - $limit;
                 $params = [
                     "data_file_path" => $filename_data,
-                    "sql"            => $sql
                 ];
                 DbOptHook::listen('output_table_data_per_page', $params);
+                unset($filename_data);
+                unset($data);
+                unset($params);
             }
         }
         return $this;
