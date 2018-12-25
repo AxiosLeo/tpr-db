@@ -77,6 +77,17 @@ class Table extends Mysql
         return $this;
     }
 
+    /**
+     * 同步数据表数据，仅支持同mysql实例
+     * @param      $source_db
+     * @param null $source_table
+     *
+     * @return $this
+     * @throws \ErrorException
+     * @throws \tpr\db\exception\BindParamException
+     * @throws \tpr\db\exception\Exception
+     * @throws \tpr\db\exception\PDOException
+     */
     public function sysData($source_db, $source_table = null)
     {
         $curr_db = $this->dbName();
