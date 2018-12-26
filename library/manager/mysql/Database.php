@@ -78,8 +78,6 @@ class Database extends Mysql
         if (file_exists($filename)) {
             @unlink($filename);
         }
-        $create_db_sql = $this->create()->buildSql() . ';';
-        $this->saveFile($filename, $create_db_sql);
 
         $tables = $this->getTableList();
         foreach ($tables as $table) {
