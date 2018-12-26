@@ -38,7 +38,7 @@ class Database extends Mysql
         $sql    = Sql::getSql(Operation::TABLE_SHOW, [
             "name" => $this->dbName()
         ]);
-        $tables = $this->query->query($sql);
+        $tables = $this->execSql($sql);
         $list   = [];
         foreach ($tables as $t) {
             foreach ($t as $k => $v) {
@@ -194,7 +194,8 @@ class Database extends Mysql
                 $values .= ",";
             }
             if (!is_null($d)) {
-                $values .= "'" . addslashes($d) . "'";
+                $tmp    = strpos($d, "'") !== false ? '"' . addslashes($d) . '"' : "'" . addslashes($d) . "'";
+                $values .= $tmp;
             } else {
                 $values .= 'null';
             }
