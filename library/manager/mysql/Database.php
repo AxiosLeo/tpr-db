@@ -116,14 +116,19 @@ class Database extends Mysql
             $m          = 0;
             $table_name = '`' . $table . '`';
             $params     = [
-                "table" => $table,
+                "table"      => $table,
+                "total"      => $total,
+                "page_total" => ceil($total / $limit)
             ];
             DbOptHook::listen('output_table_data_begin', $params);
             unset($params);
             while ($total > 0) {
                 $m++;
                 $filename_data = $this->filePath($path . $table) . "page_" . $m . '.sql';
-                $data          = $this->query->table($table)->page($m)->limit($limit)->select();
+                if (file_exists($filename_data)) {
+                    @unlink($filename_data);
+                }
+                $data = $this->query->table($table)->page($m)->limit($limit)->select();
                 foreach ($data as $d) {
                     $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
