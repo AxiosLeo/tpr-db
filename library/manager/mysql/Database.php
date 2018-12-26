@@ -82,7 +82,7 @@ class Database extends Mysql
         $tables = $this->getTableList();
         foreach ($tables as $table) {
             $table_name = '`' . $table . '`';
-            $this->saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';', 3);
+            $this->saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';');
         }
         return $this;
     }
