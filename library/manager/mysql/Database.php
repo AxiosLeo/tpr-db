@@ -134,7 +134,7 @@ class Database extends Mysql
                 $total  = $total - $limit;
                 $params = [
                     "data_file_path" => $filename_data,
-                    "page"           => $m,
+                    "page_curr"      => $m,
                     "page_total"     => $page_total
                 ];
                 DbOptHook::listen('output_table_data_per_page', $params);
