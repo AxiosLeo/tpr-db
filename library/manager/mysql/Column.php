@@ -30,12 +30,12 @@ class Column extends Mysql
 
     public function add()
     {
-        $data = [
+        $this->operation = Operation::COLUMN_ADD;
+        $this->sql_data  = [
             'table_name'  => $this->formatTableName($this->table_name),
             'column_name' => $this->formatTableName($this->column_name),
             'datatype'    => $this->getDataType()
         ];
-        $sql  = Sql::getSql(Operation::COLUMN_ADD, $data);
-        return $sql;
+        return $this;
     }
 }
