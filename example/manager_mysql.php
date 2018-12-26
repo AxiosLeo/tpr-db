@@ -58,8 +58,10 @@ foreach ($tables as $table) {
     unset($Table);
 }
 
+// 导出数据库结构
+$DBM->database($source_db)->outputStructure(__DIR__ . '/db_sql');
+
 // 将源数据库的所有数据导出为sql文件
-// mode=0 单文件存储
-// mode=1 数据库创建一个文件，表创建及表数据插入在同一个文件
-// mode=2 数据库创建一个文件，表创建一个文件，表数据插入在以表名为目录名的目录中有多个文件，每个文件存储limit行insert操作
-$DBM->database($source_db)->saveAllData(__DIR__ . '/db_sql', 2, 1000);
+// 默认导出全部数据表的数据。
+// 可设置导出哪些数据表的数据, $tables = "table_1,table2,..." 或 $tables=["table_1","table_2",...]
+$DBM->database($source_db)->outputAllData(__DIR__ . '/db_sql');
