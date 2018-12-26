@@ -143,6 +143,11 @@ class Mysql extends Driver
         return $this->query->query($sql);
     }
 
+    public function execSql($sql)
+    {
+        return $this->query->query($sql);
+    }
+
     protected function clear()
     {
         $this->curr_sql  = null;
