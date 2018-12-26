@@ -71,17 +71,13 @@ class Database extends Mysql
     public function outputStructure($path)
     {
         $path = $this->filePath($path);
-        if (empty($name)) {
-            $name = $this->dbName();
-        }
-        $filename = $path . DIRECTORY_SEPARATOR . $name . '.sql';
-        if (file_exists($filename)) {
-            @unlink($filename);
-        }
-
         $tables = $this->getTableList();
         foreach ($tables as $table) {
             $table_name = '`' . $table . '`';
+            $filename = $path . DIRECTORY_SEPARATOR . $table . '.sql';
+            if (file_exists($filename)) {
+                @unlink($filename);
+            }
             $this->saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';');
         }
         return $this;
