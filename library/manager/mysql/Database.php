@@ -194,7 +194,7 @@ class Database extends Mysql
                 $values .= ",";
             }
             if (!is_null($d)) {
-                $values .= "'" . $d . "'";
+                $values .= "'" . addslashes($d) . "'";
             } else {
                 $values .= 'null';
             }

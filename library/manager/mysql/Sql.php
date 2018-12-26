@@ -24,9 +24,8 @@ class Sql
 
         foreach ($data as $k => $v) {
             $key = '{' . $k . '}';
-            str_replace('`', '', $v);
             if (strpos($sql, $key) != false) {
-                $sql = str_replace($key, $v, $sql);
+                $sql = str_replace($key, addslashes($v), $sql);
             }
         }
 
