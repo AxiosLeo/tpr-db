@@ -115,10 +115,11 @@ class Database extends Mysql
             $total      = $this->query->table($table)->count();
             $m          = 0;
             $table_name = '`' . $table . '`';
+            $page_total = ceil($total / $limit);
             $params     = [
                 "table"      => $table,
                 "total"      => $total,
-                "page_total" => ceil($total / $limit)
+                "page_total" => $page_total
             ];
             DbOptHook::listen('output_table_data_begin', $params);
             unset($params);
@@ -135,7 +136,8 @@ class Database extends Mysql
                 $total  = $total - $limit;
                 $params = [
                     "data_file_path" => $filename_data,
-                    "page"           => $m
+                    "page"           => $m,
+                    "page_total"     => $page_total
                 ];
                 DbOptHook::listen('output_table_data_per_page', $params);
                 unset($filename_data);
