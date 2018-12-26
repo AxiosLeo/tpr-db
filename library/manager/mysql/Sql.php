@@ -68,6 +68,7 @@ class Sql
         'table.sys'      => "CREATE TABLE {table_name} {like};",
         'table.sys_data' => "INSERT INTO {table_name} {sql}",
         'table.delete'   => "DROP TABLE IF EXISTS {table_name};",
+        'table.exist'    => "SELECT `TABLE_SCHEMA`,`TABLE_NAME` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA={name} AND TABLE_NAME={table_name}",
         'index.delete'   => "ALTER TABLE {table_name} DROP INDEX {index_name};",
         'column.add'     => "ALTER TABLE {table_name} ADD {column_name} {datatype};",
         'column.delete'  => "ALTER TABLE {table_name} DROP COLUMN {column_name};",
