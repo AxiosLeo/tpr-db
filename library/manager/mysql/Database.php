@@ -101,16 +101,22 @@ class Database extends Mysql
             $tables = $this->getTableList();
         }
 
+        $params = [
+            "output_path"     => $path,
+            "tables"          => $tables,
+            "page_limit"      => $limit,
+            "database_config" => $this->getOptions()
+        ];
+        DbOptHook::listen('output_all_data', $params);
+        unset($params);
+
         foreach ($tables as $table) {
             // insert data sql
             $total      = $this->query->table($table)->count();
             $m          = 0;
             $table_name = '`' . $table . '`';
             $params     = [
-                "table"   => $table,
-                "page"    => $m,
-                "limit"   => $limit,
-                "options" => $this->getOptions()
+                "table" => $table,
             ];
             DbOptHook::listen('output_table_data_begin', $params);
             unset($params);
@@ -124,6 +130,7 @@ class Database extends Mysql
                 $total  = $total - $limit;
                 $params = [
                     "data_file_path" => $filename_data,
+                    "page"           => $m
                 ];
                 DbOptHook::listen('output_table_data_per_page', $params);
                 unset($filename_data);
