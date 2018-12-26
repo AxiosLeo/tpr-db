@@ -52,6 +52,10 @@ class Mysql extends Driver
 
     public function dbExist($db_name)
     {
+        $tmp = addslashes($db_name);
+        if (strpos($tmp, '\\') !== false) {
+            return false;
+        }
         $sql    = Sql::getSql('db.exist', [
             'name' => "'" . $db_name . "'"
         ]);
