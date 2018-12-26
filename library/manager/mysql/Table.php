@@ -79,6 +79,7 @@ class Table extends Mysql
 
     /**
      * 同步数据表数据，仅支持同mysql实例
+     *
      * @param      $source_db
      * @param null $source_table
      *
