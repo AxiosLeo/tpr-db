@@ -52,10 +52,6 @@ class Mysql extends Driver
 
     public function dbExist($db_name)
     {
-        $tmp = addslashes($db_name);
-        if (strpos($tmp, '\\') !== false) {
-            return false;
-        }
         $sql    = Sql::getSql('db.exist', [
             'name' => "'" . $db_name . "'"
         ]);
@@ -65,6 +61,16 @@ class Mysql extends Driver
         unset($t);
         unset($sql);
         return $r;
+    }
+
+    public function tableExist($db_name, $table_name)
+    {
+        $sql    = Sql::getSql('table.exist', [
+            'name'       => "'" . $db_name . "'",
+            'table_name' => "'" . $table_name . "'",
+        ]);
+        $result = $this->query->query($sql);
+        return empty($result) ? false : true;
     }
 
     /**
