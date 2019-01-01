@@ -35,43 +35,5 @@ composer require axios/tpr-db
 
   > [example/redis.php](https://github.com/AxiosCros/tpr-db/blob/master/example/redis.php)
 
-## 自定义连接器示例
-``` php
-<?php
-
-namespace tpr\db\example;
-
-use tpr\db\DbClient;
-use tpr\db\DbFacade;
-
-class Mysql extends DbFacade
-{
-    private static $Con;
-
-    public static function __callStatic($method, $params)
-    {
-        if (is_null(self::$Con)) {
-            $config    = [
-                'type'     => 'mysql', // mongo | pgsql | mysql
-                // 服务器地址
-                'hostname' => '127.0.0.1',
-                // 数据库名
-                'database' => 'test',
-                // 用户名
-                'username' => 'root',
-                // 密码
-                'password' => 'root',
-                // 端口
-                'hostport' => '3306',
-                // 数据库表前缀
-                'prefix'   => '',
-            ];
-            self::$Con = DbClient::newCon('con_name', $config);
-        }
-        return call_user_func_array([self::$Con, $method], $params);
-    }
-}
-```
-
 ## DbManager 数据库管理功能 (开发中)
 > 使用示例 [manager_mysql.php](https://github.com/AxiosCros/tpr-db/blob/DbManager/example/manager_mysql.php)
