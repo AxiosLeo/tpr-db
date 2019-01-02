@@ -8,7 +8,9 @@
 
 namespace tpr\db\manager\mysql;
 
+use tpr\db\core\FilesOpt;
 use tpr\db\DbOptHook;
+use tpr\db\exception\PDOException;
 use tpr\db\manager\driver\Mysql;
 
 class Database extends Mysql
@@ -70,7 +72,7 @@ class Database extends Mysql
 
     public function outputStructure($path)
     {
-        $path   = $this->filePath($path);
+        $path   = FilesOpt::filePath($path);
         $tables = $this->getTableList();
         foreach ($tables as $table) {
             $table_name = '`' . $table . '`';
@@ -78,14 +80,14 @@ class Database extends Mysql
             if (file_exists($filename)) {
                 @unlink($filename);
             }
-            $this->saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';');
+            FilesOpt::saveFile($filename, $this->getSql($this->query->query("SHOW CREATE TABLE " . $table_name)) . ';');
         }
         return $this;
     }
 
     public function outputAllData($path, $tables = "", $limit = 100)
     {
-        $path = $this->filePath($path);
+        $path = FilesOpt::filePath($path);
 
         if (!empty($tables)) {
             if (!is_array($tables)) {
@@ -119,13 +121,13 @@ class Database extends Mysql
             unset($params);
             while ($total > 0) {
                 $m++;
-                $filename_data = $this->filePath($path . $table) . "page_" . $m . '.sql';
+                $filename_data = FilesOpt::filePath($path . $table) . "page_" . $m . '.sql';
                 if (file_exists($filename_data)) {
                     @unlink($filename_data);
                 }
                 $data = $this->query->table($table)->page($m)->limit($limit)->select();
                 foreach ($data as $d) {
-                    $this->saveFile($filename_data, $this->buildDataSql($table_name, $d));
+                    FilesOpt::saveFile($filename_data, $this->buildDataSql($table_name, $d));
                 }
                 $total  = $total - $limit;
                 $params = [
@@ -142,29 +144,76 @@ class Database extends Mysql
         return $this;
     }
 
-    private function filePath($path)
+    public function importData($data_path)
     {
-        $path = substr($path, -1) != '/' ? $path . '/' : $path;
-        if (!file_exists($path)) {
-            if (!mkdir($path, 0700, true)) {
-                return null;
+        $data_path      = FilesOpt::filePath($data_path);
+        $sql_files_list = FilesOpt::searchFile($data_path, ["sql"]);
+
+        foreach ($sql_files_list as $sql_file) {
+            $table_name  = basename($sql_file, ".sql");
+            $table_exist = $this->tableExist($this->db_name, $table_name);
+            if (!$table_exist) {
+                $sql = file_get_contents($sql_file);
+                $sql = str_replace(["\r\n", "\n"], "", $sql);
+                if (!empty($sql)) {
+                    try {
+                        $this->getQuery()->query($sql);
+                    } catch (\PDOException $e) {
+                        $params = ["exception" => $e, "sql" => $sql];
+                        DbOptHook::listen('throw_exception', $params);
+                    } catch (PDOException $e) {
+                        $params = ["exception" => $e, "sql" => $sql];
+                        DbOptHook::listen('throw_exception', $params);
+                    }
+                }
             }
+
+            // 同步数据
+            $table_data_files = FilesOpt::searchFile($data_path . $table_name . "/");
+            $this->getQuery()->query("SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' ");
+            if (!empty($table_data_files)) {
+                $table_data_files = $this->sortFiles($table_data_files);
+                $total            = count($table_data_files);
+                $params           = ["table_name" => $table_name, "table_data_files" => $table_data_files, "total" => $total];
+                DbOptHook::listen('import_table_data_begin', $params);
+                $n = 0;
+                foreach ($table_data_files as $page => $data_file) {
+                    $sql      = file_get_contents($data_file);
+                    $sqlArray = explode("INSERT", $sql);
+                    foreach ($sqlArray as $sql) {
+                        $sql = str_replace(["\r\n", "\n"], "", $sql);
+                        if (!empty($sql)) {
+                            $sql = "INSERT" . $sql;
+                            try {
+                                $this->getQuery()->query($sql);
+                            } catch (\Exception $e) {
+                                $params = ["exception" => $e, "sql" => $sql];
+                                DbOptHook::listen('throw_exception', $params);
+                            }
+                        }
+                    }
+                    $params = ["table_name" => $table_name, "file_path" => $data_file, "page" => $n, "total" => $total];
+                    DbOptHook::listen('import_table_data_page', $params);
+                    unset($sql, $sqlArray);
+                }
+                $params = [];
+                DbOptHook::listen('import_table_data_end', $params);
+            }
+            unset($table_data_files);
         }
-        return $path;
     }
 
-    private function saveFile($filename, $sql, $blank = 0)
+    private function sortFiles($table_data_files, $ext = ".sql")
     {
-        $fp = fopen($filename, 'a+');
-        if (flock($fp, LOCK_EX)) {
-            while ($blank > 0) {
-                fwrite($fp, "\r\n");
-                $blank = $blank - 1;
-            }
-            fwrite($fp, $sql . "\r\n");
-            flock($fp, LOCK_UN);
+        $list = [];
+        foreach ($table_data_files as $data_file) {
+            $filename = basename($data_file, $ext);
+            list($tmp, $key) = explode('_', $filename);
+            $list[$key] = $data_file;
+            unset($tmp);
         }
-        fclose($fp);
+        ksort($list);
+        return array_values($list);
     }
 
     private function getSql($result)
