@@ -114,26 +114,26 @@ class Db
     private static function parseDsn($config)
     {
         $dsnStr = $config['dsn'];
-        $info = parse_url($dsnStr);
+        $info   = parse_url($dsnStr);
         if (!$info) {
             return [];
         }
         $dsn = [
             'type'     => $info['scheme'],
             'username' => isset($info['user']) ? $info['user'] : '',
-            'password' => isset($info['pass']) ? $info['pass'] : '',
+            'password' => isset($info['pass']) ? urldecode($info['pass']) : '',
             'hostname' => isset($info['host']) ? $info['host'] : '',
             'hostport' => isset($info['port']) ? $info['port'] : '',
             'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
             'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
         ];
-
         if (isset($info['query'])) {
             parse_str($info['query'], $dsn['params']);
         } else {
             $dsn['params'] = [];
         }
-        return $dsn;
+        $config = array_merge($config, $dsn);
+        return $config;
     }
 
     public static $defaultConfig = [
