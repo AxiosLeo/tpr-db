@@ -61,7 +61,7 @@ class Sql
     public static $sql = [
         'db.create'      => "CREATE DATABASE IF NOT EXISTS {name} DEFAULT CHARACTER SET {charset} COLLATE {collate};",
         'db.delete'      => "DROP DATABASE IF EXISTS {name};",
-        'db.exist'       => "SELECT count(SCHEMA_NAME) AS exist FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME={name}",
+        'db.exist'       => "SELECT SCHEMA_NAME,DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME={name}",
         'db.show'        => "SHOW DATABASES;",
         'table.show'     => "SHOW TABLES FROM {name};",
         'table.create'   => "CREATE TABLE {table_name} () ENGINE={engine} AUTO_INCREMENT={auto_increment} DEFAULT CHARSET={charset};",
