@@ -19,6 +19,7 @@ class Operation
     const TABLE_SYS      = 'table.sys';
     const TABLE_SYS_DATA = 'table.sys_data';
     const TABLE_SHOW     = 'table.show';
+    const TABLE_EXIST    = 'table.exist';
     const COLUMN_ADD     = 'column.add';
     const FETCH_ALL      = 'fetch.all';
 }
