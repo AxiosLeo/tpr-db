@@ -107,12 +107,13 @@ class Db
      * DSN解析
      * 格式： mysql://username:passwd@localhost:3306/DbName?param1=val1&param2=val2#utf8
      *
-     * @param $dsnStr
+     * @param $config
      *
      * @return array
      */
-    private static function parseDsn($dsnStr)
+    private static function parseDsn($config)
     {
+        $dsnStr = $config['dsn'];
         $info = parse_url($dsnStr);
         if (!$info) {
             return [];
