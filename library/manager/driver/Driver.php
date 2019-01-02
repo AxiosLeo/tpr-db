@@ -68,11 +68,10 @@ abstract class Driver
     public function setOption($key, $value = null)
     {
         self::$options->set($key, $value);
+        self::$options->delete('dsn');
 
         DbClient::closeCon($this->getConName());
-
         $query = DbClient::newCon($this->getConName(), $this->getOptions());
-
         $this->setQuery($query);
 
         return $this;
