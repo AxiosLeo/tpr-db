@@ -13,6 +13,7 @@ class Operation
     const DATATYPE       = 'datatype';
     const DB_CREATE      = 'db.create';
     const DB_DELETE      = 'db.delete';
+    const DB_EXIST       = 'db.exist';
     const TABLE_CREATE   = 'table.create';
     const TABLE_DELETE   = 'table.delete';
     const TABLE_SYS      = 'table.sys';
