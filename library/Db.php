@@ -107,32 +107,33 @@ class Db
      * DSN解析
      * 格式： mysql://username:passwd@localhost:3306/DbName?param1=val1&param2=val2#utf8
      *
-     * @param $dsnStr
+     * @param $config
      *
      * @return array
      */
-    private static function parseDsn($dsnStr)
+    private static function parseDsn($config)
     {
-        $info = parse_url($dsnStr);
+        $dsnStr = $config['dsn'];
+        $info   = parse_url($dsnStr);
         if (!$info) {
             return [];
         }
         $dsn = [
             'type'     => $info['scheme'],
             'username' => isset($info['user']) ? $info['user'] : '',
-            'password' => isset($info['pass']) ? $info['pass'] : '',
+            'password' => isset($info['pass']) ? urldecode($info['pass']) : '',
             'hostname' => isset($info['host']) ? $info['host'] : '',
             'hostport' => isset($info['port']) ? $info['port'] : '',
             'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
             'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
         ];
-
         if (isset($info['query'])) {
             parse_str($info['query'], $dsn['params']);
         } else {
             $dsn['params'] = [];
         }
-        return $dsn;
+        $config = array_merge($config, $dsn);
+        return $config;
     }
 
     public static $defaultConfig = [

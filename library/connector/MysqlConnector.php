@@ -31,7 +31,9 @@ class MysqlConnector extends Connection
         } else {
             $dsn = 'mysql:host=' . $config['hostname'];
         }
-        $dsn .= ';dbname=' . $config['database'];
+        if(!empty($config['database'])){
+            $dsn .= ';dbname=' . $config['database'];
+        }
         if (!empty($config['charset'])) {
             $dsn .= ';charset=' . $config['charset'];
         }
