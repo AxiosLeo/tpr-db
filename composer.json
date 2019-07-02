@@ -1,7 +1,6 @@
 {
   "name": "axios/tpr-db",
   "description": "database orm",
-  "version": "0.2.3",
   "type": "library",
   "license": "MIT",
   "homepage": "https://github.com/AxiosCros/tpr-db",
@@ -15,7 +14,6 @@
     "php": ">=7.0"
   },
   "require-dev": {
-    "composer/composer": "1.0.*@dev",
     "axios/xhprof-composer": "^1.0"
   },
   "autoload": {
