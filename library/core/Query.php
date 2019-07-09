@@ -2259,13 +2259,14 @@ class Query
      * @param integer  $count    每次处理的数据数量
      * @param callable $callback 处理回调方法
      * @param string   $column   分批处理的字段名
+     * @param string   $order
      * @return bool
      * @throws BindParamException
      * @throws Exception
      * @throws PDOException
      * @throws \ErrorException
      */
-    public function chunk($count, $callback, $column = null)
+    public function chunk($count, $callback, $column = null, $order = 'asc')
     {
         $options = $this->getOptions();
         if (isset($options['table'])) {
@@ -2278,27 +2279,20 @@ class Query
             unset($options['order']);
         }
         $bind      = $this->bind;
-        $resultSet = $this->options($options)->limit($count)->order($column, 'asc')->select();
-        if (strpos($column, '.')) {
-            list($alias, $key) = explode('.', $column);
-            unset($alias);
-        } else {
-            $key = $column;
-        }
+        $times = 1;
+        $query = $this->options($options)->page($times, $count);
 
-        while (!empty($resultSet)) {
+        $resultSet = $query->order($column, $order)->select();
+
+        while (count($resultSet) > 0) {
             if (false === call_user_func($callback, $resultSet)) {
                 return false;
             }
 
-            $end    = end($resultSet);
-            $lastId    = is_array($end) ? $end[$key] : $end->$key;
-            $resultSet = $this->options($options)
-                ->limit($count)
-                ->bind($bind)
-                ->where($column, '>', $lastId)
-                ->order($column, 'asc')
-                ->select();
+            $times++;
+            $query = $this->options($options)->page($times, $count);
+
+            $resultSet = $query->bind($bind)->order($column, $order)->select();
         }
         return true;
     }
