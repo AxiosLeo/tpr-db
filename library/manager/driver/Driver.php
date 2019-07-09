@@ -1,15 +1,9 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018-12-18 14:57
- */
 
 namespace tpr\db\manager\driver;
 
+use think\DbManager;
 use tpr\db\core\ArrayTool;
-use tpr\db\core\Connection;
 use tpr\db\DbClient;
 
 abstract class Driver
@@ -20,10 +14,13 @@ abstract class Driver
     protected static $options;
 
     /**
-     * @var Connection
+     * @var DbManager
      */
     protected static $queryInstance;
 
+    /**
+     * @var DbManager
+     */
     protected $query;
 
     protected static $con_name_static;
@@ -32,7 +29,7 @@ abstract class Driver
 
     public function __construct()
     {
-        if (is_null(self::$options)) {
+        if (null === self::$options) {
             self::$options = ArrayTool::instance([]);
         }
         $this->query    = $this->getQuery();
@@ -42,6 +39,7 @@ abstract class Driver
     public function setConName($con_name)
     {
         self::$con_name_static = $con_name;
+
         return $this;
     }
 
@@ -54,14 +52,16 @@ abstract class Driver
     {
         $this->query         = $query;
         self::$queryInstance = $query;
+
         return $this;
     }
 
     public function getQuery()
     {
-        if (is_null(self::$queryInstance)) {
+        if (null === self::$queryInstance) {
             $this->setQuery(DbClient::newCon($this->getConName(), $this->getOptions()));
         }
+
         return self::$queryInstance;
     }
 

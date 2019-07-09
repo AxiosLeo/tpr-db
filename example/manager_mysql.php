@@ -1,10 +1,4 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018-12-19 15:26
- */
 
 namespace tpr\db\manager;
 
@@ -12,12 +6,12 @@ use tpr\db\DbManager;
 
 // 数据库配置
 $database_config = [
-    "type"     => 'mysql',
-    "hostname" => '127.0.0.1',
-    "database" => 'api',
-    "username" => 'root',
-    "password" => 'root',
-    "hostport" => '3306',
+    'type'     => 'mysql',
+    'hostname' => '127.0.0.1',
+    'database' => 'api',
+    'username' => 'root',
+    'password' => 'root',
+    'hostport' => '3306',
 ];
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -35,7 +29,7 @@ $target_db = 'target_db_name';
 // 判断源数据库是否存在
 $is_exist = $DBM->dbExist($source_db);
 if (!$is_exist) {
-    echo $source_db . "数据库不存在";
+    echo $source_db . '数据库不存在';
     die();
 }
 

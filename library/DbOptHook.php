@@ -1,10 +1,4 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018-12-25 10:58
- */
 
 namespace tpr\db;
 
@@ -13,19 +7,17 @@ class DbOptHook
     private static $tags = [];
 
     /**
-     * 动态添加行为扩展到某个标签
+     * 动态添加行为扩展到某个标签.
      *
      * @param string $tag      标签名称
      * @param mixed  $behavior 行为名称
      * @param bool   $first    是否放到开头执行
-     *
-     * @return void
      */
     public static function add($tag, $behavior, $first = false)
     {
         isset(self::$tags[$tag]) || self::$tags[$tag] = [];
-        if (is_array($behavior) && !is_callable($behavior)) {
-            if (!array_key_exists('_overlay', $behavior) || !$behavior['_overlay']) {
+        if (\is_array($behavior) && !\is_callable($behavior)) {
+            if (!\array_key_exists('_overlay', $behavior) || !$behavior['_overlay']) {
                 unset($behavior['_overlay']);
                 self::$tags[$tag] = array_merge(self::$tags[$tag], $behavior);
             } else {
@@ -40,10 +32,10 @@ class DbOptHook
     }
 
     /**
-     * 批量导入插件
+     * 批量导入插件.
      *
-     * @param array   $tags      插件信息
-     * @param boolean $recursive 是否递归合并
+     * @param array $tags      插件信息
+     * @param bool  $recursive 是否递归合并
      */
     public static function import(array $tags, $recursive = true)
     {
@@ -57,7 +49,7 @@ class DbOptHook
     }
 
     /**
-     * 获取插件信息
+     * 获取插件信息.
      *
      * @param string $tag 插件位置 留空获取全部
      *
@@ -68,13 +60,13 @@ class DbOptHook
         if (empty($tag)) {
             //获取全部的插件信息
             return self::$tags;
-        } else {
-            return array_key_exists($tag, self::$tags) ? self::$tags[$tag] : [];
         }
+
+        return \array_key_exists($tag, self::$tags) ? self::$tags[$tag] : [];
     }
 
     /**
-     * 监听标签的行为
+     * 监听标签的行为.
      *
      * @param string $tag    标签名称
      * @param mixed  $params 传入参数
@@ -92,19 +84,21 @@ class DbOptHook
             if (false === $results[$key]) {
                 // 如果返回false 则中断行为执行
                 break;
-            } elseif (!is_null($results[$key]) && $once) {
+            }
+            if (null !== $results[$key] && $once) {
                 break;
             }
         }
+
         return $once ? end($results) : $results;
     }
 
     /**
-     * 执行某个行为
+     * 执行某个行为.
      *
      * @param mixed  $class  要执行的行为
      * @param string $tag    方法名（标签名）
-     * @param Mixed  $params 传人的参数
+     * @param mixed  $params 传人的参数
      * @param mixed  $extra  额外参数
      *
      * @return mixed
@@ -113,20 +107,21 @@ class DbOptHook
     {
         $method = self::parseName($tag, 1, false);
         if ($class instanceof \Closure) {
-            $result = call_user_func_array($class, [& $params, $extra]);
-        } elseif (is_array($class)) {
+            $result = \call_user_func_array($class, [&$params, $extra]);
+        } elseif (\is_array($class)) {
             list($class, $method) = $class;
 
-            $result = (new $class())->$method($params, $extra);
-        } elseif (is_object($class)) {
-            $result = $class->$method($params, $extra);
+            $result = (new $class())->{$method}($params, $extra);
+        } elseif (\is_object($class)) {
+            $result = $class->{$method}($params, $extra);
         } elseif (strpos($class, '::')) {
-            $result = call_user_func_array($class, [& $params, $extra]);
+            $result = \call_user_func_array($class, [&$params, $extra]);
         } else {
             $obj    = new $class();
-            $method = ($tag && is_callable([$obj, $method])) ? $method : 'run';
-            $result = $obj->$method($params, $extra);
+            $method = ($tag && \is_callable([$obj, $method])) ? $method : 'run';
+            $result = $obj->{$method}($params, $extra);
         }
+
         return $result;
     }
 
@@ -134,9 +129,9 @@ class DbOptHook
      * 字符串命名风格转换
      * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
      *
-     * @param string  $name    字符串
-     * @param integer $type    转换类型
-     * @param bool    $ucfirst 首字母是否大写（驼峰规则）
+     * @param string $name    字符串
+     * @param int    $type    转换类型
+     * @param bool   $ucfirst 首字母是否大写（驼峰规则）
      *
      * @return string
      */
@@ -146,9 +141,10 @@ class DbOptHook
             $name = preg_replace_callback('/_([a-zA-Z])/', function ($match) {
                 return strtoupper($match[1]);
             }, $name);
+
             return $ucfirst ? ucfirst($name) : lcfirst($name);
-        } else {
-            return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
         }
+
+        return strtolower(trim(preg_replace('/[A-Z]/', '_\\0', $name), '_'));
     }
 }

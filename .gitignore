@@ -9,3 +9,4 @@ composer.lock
 .idea/
 .vscode/*
 test/*
+.php_cs.cache

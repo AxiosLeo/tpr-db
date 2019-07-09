@@ -1,10 +1,4 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018-12-18 14:55
- */
 
 namespace tpr\db\manager\driver;
 
@@ -19,16 +13,11 @@ class Mysql extends Driver
 {
     protected $db_name;
 
-    protected $curr_sql = null;
+    protected $curr_sql;
 
-    protected $operation = null;
+    protected $operation;
 
     protected $sql_data = [];
-
-    /**
-     * @var Database
-     */
-    private static $DatabaseInstance;
 
     protected $charset = Charset::Utf8;
 
@@ -38,23 +27,31 @@ class Mysql extends Driver
 
     protected $auto_increment = 1;
 
+    /**
+     * @var Database
+     */
+    private static $DatabaseInstance;
+
     public function dbName($db_name = null)
     {
-        if (is_null($db_name)) {
+        if (null === $db_name) {
             return $this->db_name;
-        } else if ($db_name != $this->db_name) {
+        }
+        if ($db_name != $this->db_name) {
             $this->db_name = $db_name;
             $this->setOption('database', $this->db_name);
         }
+
         return $this->db_name;
     }
 
     public function dbExist($db_name)
     {
         $sql    = Sql::getSql(Operation::DB_EXIST, [
-            'name' => "'" . $db_name . "'"
+            'name' => "'" . $db_name . "'",
         ]);
         $result = $this->query->query($sql);
+
         return empty($result) ? false : true;
     }
 
@@ -65,6 +62,7 @@ class Mysql extends Driver
             'table_name' => "'" . $table_name . "'",
         ]);
         $result = $this->query->query($sql);
+
         return empty($result) ? false : true;
     }
 
@@ -75,15 +73,16 @@ class Mysql extends Driver
      */
     public function database($db_name = null)
     {
-        if (is_null($db_name)) {
+        if (null === $db_name) {
             $db_name = $this->dbName();
         }
-        if (is_null(self::$DatabaseInstance)) {
+        if (null === self::$DatabaseInstance) {
             self::$DatabaseInstance = new Database();
             self::$DatabaseInstance->dbName($db_name);
-        } elseif (!is_null($db_name) && $db_name != $this->dbName()) {
+        } elseif (null !== $db_name && $db_name != $this->dbName()) {
             self::$DatabaseInstance->dbName($this->dbName($db_name));
         }
+
         return self::$DatabaseInstance;
     }
 
@@ -97,6 +96,25 @@ class Mysql extends Driver
         $this->collate = $collate;
     }
 
+    public function buildSql()
+    {
+        $this->curr_sql = Sql::getSql($this->operation, $this->sql_data);
+
+        return $this->curr_sql;
+    }
+
+    public function exec()
+    {
+        $sql = $this->buildSql();
+
+        return $this->query->query($sql);
+    }
+
+    public function execSql($sql)
+    {
+        return $this->query->query($sql);
+    }
+
     protected function getDataType($charset = '', $collate = '')
     {
         if (empty($charset) && empty($collate)) {
@@ -104,7 +122,7 @@ class Mysql extends Driver
         }
         $data = [
             'charset' => $charset,
-            'collate' => $collate
+            'collate' => $collate,
         ];
 
         return Sql::getSql(Operation::DATATYPE, $data);
@@ -117,8 +135,8 @@ class Mysql extends Driver
 
     protected function formatTableName($table_name)
     {
-        $prefix = $this->query->getConfig('prefix', '');
-        if (strpos($table_name, '.') !== false) {
+        $prefix = $this->query->getConfig('prefix');
+        if (false !== strpos($table_name, '.')) {
             list($db_name, $table_name) = explode('.', $table_name);
         } else {
             $db_name = $this->dbName();
@@ -130,23 +148,6 @@ class Mysql extends Driver
     protected function formatColumn($column_name)
     {
         return '`' . $column_name . '`';
-    }
-
-    public function buildSql()
-    {
-        $this->curr_sql = Sql::getSql($this->operation, $this->sql_data);
-        return $this->curr_sql;
-    }
-
-    public function exec()
-    {
-        $sql = $this->buildSql();
-        return $this->query->query($sql);
-    }
-
-    public function execSql($sql)
-    {
-        return $this->query->query($sql);
     }
 
     protected function clear()

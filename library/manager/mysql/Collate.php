@@ -1,16 +1,9 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018-12-19 15:11
- */
 
 namespace tpr\db\manager\mysql;
 
 /**
- * 校验集
- * @package tpr\db\manager\mysql
+ * 校验集.
  */
 class Collate
 {

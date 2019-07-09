@@ -1,21 +1,15 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018/8/7 16:17
- */
 
 namespace tpr\db;
 
-use \Redis;
-use \RedisCluster;
+use Redis;
+use RedisCluster;
 use tpr\db\redis\KV;
 
 class DbRedis
 {
     private static $defaultConfig = [
-        "single"  => [
+        'single'  => [
             'host'     => '127.0.0.1',
             'auth'     => '',
             'port'     => '6379',
@@ -23,12 +17,12 @@ class DbRedis
             'timeout'  => 60,
             'database' => [
                 'default' => 0,
-            ]
+            ],
         ],
-        "cluster" => [
-            "cluster_name" => null,
-            "hosts"        => [
-                "127.0.0.1:6379"
+        'cluster' => [
+            'cluster_name' => null,
+            'hosts'        => [
+                '127.0.0.1:6379',
             ],
             'auth'         => '',
             'prefix'       => 'redis:',
@@ -37,57 +31,11 @@ class DbRedis
             'persistent'   => true,
             'database'     => [
                 'default' => 0,
-            ]
-        ]
+            ],
+        ],
     ];
 
     private static $instance = [];
-
-    /**
-     * @param string $name
-     * @param array  $config
-     *
-     * @return self
-     */
-    public static function init($name = "", $config = [])
-    {
-        if (empty($name)) {
-            $name = "redis.default";
-        }
-        if (isset(self::$instance[$name])) {
-            return self::$instance[$name];
-        }
-        $hosts = isset($config['hosts']) ? $config['hosts'] : [];
-
-        $is_cluster = !empty($hosts);
-
-        $default_config = $is_cluster ? self::$defaultConfig["cluster"] : self::$defaultConfig["single"];
-
-        $config = array_merge($default_config, $config);
-
-        self::$instance[$name] = self::instance($config);
-
-        return self::$instance[$name];
-    }
-
-    public static function clear($name = null)
-    {
-        if (is_null($name)) {
-            self::$instance = [];
-        } else if (isset(self::$instance[$name])) {
-            unset(self::$instance[$name]);
-        }
-    }
-
-    /**
-     * @param array $config
-     *
-     * @return DbRedis
-     */
-    public static function instance($config = [])
-    {
-        return new self($config);
-    }
 
     /**
      * @var Redis|RedisCluster
@@ -102,25 +50,76 @@ class DbRedis
         $is_cluster   = isset($this->config['cluster']) ? $this->config['cluster'] : false;
         if ($is_cluster) {
             $this->redis = new RedisCluster(
-                $config["cluster_name"],
-                $config["seeds"],
-                $config["timeout"],
-                $config["read_timeout"],
-                $config["persistent"]
+                $config['cluster_name'],
+                $config['seeds'],
+                $config['timeout'],
+                $config['read_timeout'],
+                $config['persistent']
             );
         } else {
             $this->redis = new Redis();
             $this->redis->connect(
                 $config['host'],
-                $config["port"],
-                $config["timeout"]
+                $config['port'],
+                $config['timeout']
             );
         }
 
-        if (!empty($config["auth"])) {
-            $this->redis->auth($config["auth"]);
+        if (!empty($config['auth'])) {
+            $this->redis->auth($config['auth']);
         }
         $this->redis->setOption(Redis::OPT_PREFIX, $config['prefix']);
+    }
+
+    public function __destruct()
+    {
+        $this->redis()->close();
+    }
+
+    /**
+     * @param string $name
+     * @param array  $config
+     *
+     * @return self
+     */
+    public static function init($name = '', $config = [])
+    {
+        if (empty($name)) {
+            $name = 'redis.default';
+        }
+        if (isset(self::$instance[$name])) {
+            return self::$instance[$name];
+        }
+        $hosts = isset($config['hosts']) ? $config['hosts'] : [];
+
+        $is_cluster = !empty($hosts);
+
+        $default_config = $is_cluster ? self::$defaultConfig['cluster'] : self::$defaultConfig['single'];
+
+        $config = array_merge($default_config, $config);
+
+        self::$instance[$name] = self::instance($config);
+
+        return self::$instance[$name];
+    }
+
+    public static function clear($name = null)
+    {
+        if (null === $name) {
+            self::$instance = [];
+        } elseif (isset(self::$instance[$name])) {
+            unset(self::$instance[$name]);
+        }
+    }
+
+    /**
+     * @param array $config
+     *
+     * @return DbRedis
+     */
+    public static function instance($config = [])
+    {
+        return new self($config);
     }
 
     public function redis()
@@ -140,6 +139,7 @@ class DbRedis
         } else {
             $this->redis()->psetex($key, $expire, $init);
         }
+
         return $init;
     }
 
@@ -148,6 +148,7 @@ class DbRedis
         if (!$this->redis()->exists($key)) {
             return false;
         }
+
         return $this->redis()->get($key);
     }
 
@@ -163,20 +164,21 @@ class DbRedis
         if (!$this->redis()->exists($key)) {
             return false;
         }
-        $count = $this->redis()->incr($key);
-        return $count;
+
+        return $this->redis()->incr($key);
     }
 
     public function setsMembers($key)
     {
         $size    = $this->redis()->sCard($key);
         $members = [];
-        for ($i = 0; $i < $size; $i++) {
+        for ($i = 0; $i < $size; ++$i) {
             $members[$i] = $this->redis()->sPop($key);
         }
         foreach ($members as $m) {
             $this->redis()->sAdd($key, $m);
         }
+
         return $members;
     }
 
@@ -184,9 +186,9 @@ class DbRedis
     {
         if ($ttl) {
             return $this->redis()->set($key, $this->formatArray($array), ['ex' => $ttl]);
-        } else {
-            return $this->redis()->set($key, $this->formatArray($array));
         }
+
+        return $this->redis()->set($key, $this->formatArray($array));
     }
 
     public function getArray($key)
@@ -194,6 +196,7 @@ class DbRedis
         if (!$this->redis()->exists($key)) {
             return false;
         }
+
         return $this->unFormatArray($this->redis()->get($key));
     }
 
@@ -205,10 +208,5 @@ class DbRedis
     private function unFormatArray($data)
     {
         return @unserialize(base64_decode($data));
-    }
-
-    function __destruct()
-    {
-        $this->redis()->close();
     }
 }
