@@ -1,12 +1,5 @@
 <?php
-/**
- * @author  : axios
- * @email   : axiosleo@foxmail.com
- * @blog    : http://hanxv.cn
- * @datetime: 2018-11-30 15:45
- */
-
-use \tpr\db\DbRedis;
+use tpr\db\DbRedis;
 
 $single_config = [
     'host'     => '127.0.0.1',
@@ -16,13 +9,13 @@ $single_config = [
     'timeout'  => 60,
     'database' => [
         'default' => 0,
-    ]
+    ],
 ];
 
 $cluster_config = [
-    "cluster_name" => null,
-    "hosts"        => [
-        "127.0.0.1:6379"
+    'cluster_name' => null,
+    'hosts'        => [
+        '127.0.0.1:6379',
     ],
     'auth'         => '',
     'prefix'       => 'redis:',
@@ -31,7 +24,7 @@ $cluster_config = [
     'persistent'   => true,
     'database'     => [
         'default' => 0,
-    ]
+    ],
 ];
 
 $redisClient   = DbRedis::init('con_name', $single_config);
@@ -40,7 +33,7 @@ $redisInstance = $redisClient->redis();
 $redisInstance->info();
 
 //kv opt
-$data = ["test_data"];
+$data = ['test_data'];
 $redisClient->kv('key')->set($data);
 $redisClient->kv('key')->exist();
 $redisClient->kv('key')->get();
