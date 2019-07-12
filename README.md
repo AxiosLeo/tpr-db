@@ -12,7 +12,10 @@ composer require axios/tpr-db:^1.1
 
 ## Example
 
+- Mysql | Pgsql | Sqlite | SqlServer | Oracle | Mongodb
+
   > [example/db.php](https://github.com/AxiosCros/tpr-db/blob/master/example/db.php)
+
 
 - Redis
 
