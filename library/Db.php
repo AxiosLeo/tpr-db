@@ -29,17 +29,17 @@ class Db
     public static function connect($config = [], $name = 'default')
     {
         $db = new DbManager();
-        if (!isset($config["type"]) || empty($config["type"])) {
-            $type = "mysql";
+        if (!isset($config['type']) || empty($config['type'])) {
+            $type = 'mysql';
         } else {
-            $type = $config["type"];
+            $type = $config['type'];
         }
         $connections           = [
-            $type => $config
+            $type => $config,
         ];
         self::$instance[$name] = $db->init([
-            "default"     => $type,
-            "connections" => $connections
+            'default'     => $type,
+            'connections' => $connections,
         ]);
 
         return self::$instance[$name];

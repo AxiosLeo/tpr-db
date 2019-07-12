@@ -1,4 +1,5 @@
 <?php
+
 use tpr\db\DbRedis;
 
 $single_config = [
