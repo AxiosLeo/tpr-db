@@ -34,13 +34,14 @@ class Db
         } else {
             $type = $config['type'];
         }
-        $connections           = [
+        $connections = [
             $type => $config,
         ];
-        self::$instance[$name] = $db->init([
+        $db->setConfig([
             'default'     => $type,
             'connections' => $connections,
         ]);
+        self::$instance[$name] = $db;
 
         return self::$instance[$name];
     }
